@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace CCSWE.Threading
 
             for (var i = 0; i < consumersThreads; i++)
             {
-                var workerThread = new Thread(ConsumerThread) { IsBackground = true };
+                var workerThread = new Thread(ConsumerThread) { IsBackground = true, Priority = ThreadPriority.BelowNormal };
                 workerThread.Start();
             }
         }
@@ -88,6 +89,8 @@ namespace CCSWE.Threading
 
             _consumerThreadTracker.EndOperation();
             //TODO: Raise IsCompleted property changed?
+
+            Debug.WriteLine("ConsumerThread exiting... " + _consumerThreadTracker.OperationsRunning);
         }
         #endregion
 
