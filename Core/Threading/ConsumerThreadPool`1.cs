@@ -22,6 +22,7 @@ namespace CCSWE.Threading
         #endregion
 
         #region Private Fields
+        private readonly OperationTracker _consumerThreadTracker = new OperationTracker();
         private readonly BlockingCollection<T> _items;
         private long _itemsFailed;
         private long _itemsProcessed;
@@ -34,7 +35,7 @@ namespace CCSWE.Threading
         public long ItemsFailed { get { return Interlocked.Read(ref _itemsFailed); } }
         public long ItemsProcessed { get { return Interlocked.Read(ref _itemsProcessed); } }
         public long ItemsSuccessful { get { return Interlocked.Read(ref _itemsSuccessful); } }
-        public bool IsCompleted { get { return _items.IsCompleted; } }
+        public bool IsCompleted { get { return _items.IsCompleted && !_consumerThreadTracker.IsOperationRunning; } }
         public bool IsIndeterminate { get { return !_items.IsAddingCompleted; } }
         public double Progress { get; protected set; }
         public long TotalItems { get { return Interlocked.Read(ref _totalItems); } }
@@ -43,6 +44,8 @@ namespace CCSWE.Threading
         #region Private Methods
         private void ConsumerThread()
         {
+            _consumerThreadTracker.BeginOperation();
+
             while (!_items.IsCompleted)
             {
                 try
@@ -83,6 +86,7 @@ namespace CCSWE.Threading
                 }
             }
 
+            _consumerThreadTracker.EndOperation();
             //TODO: Raise IsCompleted property changed?
         }
         #endregion
@@ -117,7 +121,7 @@ namespace CCSWE.Threading
 
         public async Task WaitForCompletion()
         {
-            while (!_items.IsCompleted)
+            while (!IsCompleted)
             {
                 await Task.Delay(100);
             }
