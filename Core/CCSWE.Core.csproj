@@ -48,6 +48,7 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="OperationTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ConsumerThreadPool`1.cs" />
     <Compile Include="TimeSpanExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
