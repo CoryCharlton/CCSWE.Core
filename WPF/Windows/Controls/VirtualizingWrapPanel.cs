@@ -120,10 +120,16 @@ namespace CCSWE.Windows.Controls
             ScrollOwner.InvalidateScrollInfo();
         }
 
-        //NOTE: Was public
         private int GetFirstVisibleIndex()
         {
             var section = GetFirstVisibleSection();
+
+            //TODO: Quick hack. Need to dig into why this is null
+            if (_abstractPanel == null)
+            {
+                return 0;
+            }
+
             var item = _abstractPanel.FirstOrDefault(x => x.Section == section);
 
             if (item != null)
@@ -134,10 +140,16 @@ namespace CCSWE.Windows.Controls
             return 0;
         }
 
-        //NOTE: Was public
         private int GetFirstVisibleSection()
         {
             int section;
+
+            //TODO: Quick hack. Need to dig into why this is null
+            if (_abstractPanel == null)
+            {
+                return 0;
+            }
+
             var maxSection = _abstractPanel.Max(x => x.Section);
 
             if (Orientation == Orientation.Horizontal)

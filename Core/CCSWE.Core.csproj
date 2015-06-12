@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Collections\Generic\ThreadSafeQueue`1.cs" />
     <Compile Include="Collections\ObjectModel\SynchronizedObservableCollection`1.cs" />
+    <Compile Include="Collections\ObjectModel\SynchronizedReadOnlyObservableCollection`1.cs" />
     <Compile Include="Collections\Specialized\NameValueCollectionExtensions.cs" />
     <Compile Include="Configuration\AppSettings.cs" />
     <Compile Include="Converter.cs" />
