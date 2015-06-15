@@ -299,12 +299,14 @@ namespace CCSWE.Collections.ObjectModel
         {
             _itemsLocker.EnterWriteLock();
 
-            var index = _items.Count;
-            
+            var index = -1;
+
             try
             {
                 CheckIsReadOnly();
                 CheckReentrancy();
+
+                index = _items.Count;
 
                 _items.Insert(index, item);
             }
@@ -322,7 +324,7 @@ namespace CCSWE.Collections.ObjectModel
         {
             _itemsLocker.EnterWriteLock();
 
-            var index = _items.Count;
+            var index = -1;
             T item;
 
             try
@@ -330,7 +332,8 @@ namespace CCSWE.Collections.ObjectModel
                 CheckIsReadOnly();
                 CheckReentrancy();
 
-                item = (T) value;
+                index = _items.Count; 
+                item = (T)value;
 
                 _items.Insert(index, item);
             }
@@ -604,36 +607,27 @@ namespace CCSWE.Collections.ObjectModel
             int index;
             T value;
 
-            _itemsLocker.EnterUpgradeableReadLock();
+            _itemsLocker.EnterWriteLock();
 
             try
             {
                 CheckIsReadOnly();
+                CheckReentrancy();
 
                 index = _items.IndexOf(item);
+
                 if (index < 0)
                 {
                     return false;
                 }
 
-                _itemsLocker.EnterWriteLock();
+                value = _items[index];
 
-                try
-                {
-                    CheckReentrancy();
-
-                    value = _items[index];
-
-                    _items.RemoveAt(index);
-                }
-                finally
-                {
-                    _itemsLocker.ExitWriteLock();
-                }
+                _items.RemoveAt(index);
             }
             finally
             {
-                _itemsLocker.ExitUpgradeableReadLock();
+                _itemsLocker.ExitWriteLock();
             }
 
             OnPropertyChanged("Count");
