@@ -10,13 +10,14 @@ namespace CCSWE.Collections.ObjectModel
     public class SynchronizedReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         #region Constructor
-        public SynchronizedReadOnlyObservableCollection(SynchronizedObservableCollection<T> list): base((IList<T>) list)
+        public SynchronizedReadOnlyObservableCollection(SynchronizedObservableCollection<T> list)
+            : base((IList<T>)list)
         {
             _context = SynchronizationContext.Current;
 
             ((INotifyCollectionChanged)Items).CollectionChanged += HandleCollectionChanged;
-            ((INotifyPropertyChanged) Items).PropertyChanged += HandlePropertyChanged;
-        }        
+            ((INotifyPropertyChanged)Items).PropertyChanged += HandlePropertyChanged;
+        }
         #endregion
 
         #region Public Events
@@ -25,7 +26,7 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Private Fields
-        private readonly SynchronizationContext _context;        
+        private readonly SynchronizationContext _context;
         #endregion
 
         #region Private Methods
@@ -37,7 +38,7 @@ namespace CCSWE.Collections.ObjectModel
         private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(e);
-        }        
+        }
         #endregion
 
         #region Protected Methods

@@ -70,10 +70,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisualExtensions.cs" />
     <Compile Include="Windows\Controls\AutoScrollListBox.cs" />
+    <Compile Include="Windows\Converters\BooleanConverter`1.cs" />
     <Compile Include="Windows\Controls\BusySpinner.xaml.cs">
       <DependentUpon>BusySpinner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="Windows\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Windows\Converters\NotNullToVisibilityConverter.cs" />
+    <Compile Include="Windows\Converters\ReversedBooleanConverter.cs" />
     <Compile Include="Windows\Input\DependentRelayCommands.cs" />
   </ItemGroup>
   <ItemGroup>
