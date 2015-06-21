@@ -774,8 +774,16 @@ namespace CCSWE.Windows.Controls
                 element = (UIElement)VisualTreeHelper.GetParent(element);
                 itemIndex = gen.IndexFromContainer(element);
             }
-            var section = _abstractPanel[itemIndex].Section;
+
             var elementRect = _realizedChildLayout[element];
+
+            //TODO: Why is this null??
+            if (_abstractPanel == null)
+            {
+                return elementRect;
+            }
+
+            var section = _abstractPanel[itemIndex].Section;
             if (Orientation == Orientation.Horizontal)
             {
                 var viewportHeight = _pixelMeasuredViewport.Height;

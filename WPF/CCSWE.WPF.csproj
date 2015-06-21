@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="DispatcherExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen.cs" />
     <Compile Include="VisualExtensions.cs" />
     <Compile Include="Windows\Controls\AutoScrollListBox.cs" />
     <Compile Include="Windows\Converters\BooleanConverter`1.cs" />
