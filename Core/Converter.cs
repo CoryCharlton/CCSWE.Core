@@ -2,7 +2,7 @@
 
 namespace CCSWE
 {
-    //TODO: Clean this up...
+    //TODO: Converter - Clean this up...
     public class Converter
     {
         public static T Convert<T>(object value)

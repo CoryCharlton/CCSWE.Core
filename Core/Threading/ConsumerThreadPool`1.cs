@@ -79,16 +79,16 @@ namespace CCSWE.Threading
                         Progress = 0;
                     }
 
-                    //TODO: Raise Progress property changed?
+                    //TODO: ConsumerThreadPool<T> - Raise Progress property changed?
                 }
-                catch (InvalidOperationException exception)
+                catch (InvalidOperationException)
                 {
                     // Move along nothing to see here...
                 }
             }
 
             _consumerThreadTracker.EndOperation();
-            //TODO: Raise IsCompleted property changed?
+            //TODO: ConsumerThreadPool<T> - Raise IsCompleted property changed?
 
             Debug.WriteLine("ConsumerThread exiting... " + _consumerThreadTracker.OperationsRunning);
         }
@@ -111,14 +111,14 @@ namespace CCSWE.Threading
         {
             _items.CompleteAdding();
 
-            //TODO: Raise IsAddingComplete and IsIndeterminate property changed?
+            //TODO: ConsumerThreadPool<T> - Raise IsAddingComplete and IsIndeterminate property changed?
         }
 
         public void Dispose()
         {
             CompleteAdding();
 
-            //TODO: Wait for completion? Cancel?
+            //TODO: ConsumerThreadPool<T> - Wait for completion? Cancel?
             _items.Dispose();
         }
 

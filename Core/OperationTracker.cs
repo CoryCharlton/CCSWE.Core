@@ -3,7 +3,6 @@ using System.Threading;
 
 namespace CCSWE
 {
-    //TODO: Add a reset method??
     public class OperationTracker
     {
         #region Constructor

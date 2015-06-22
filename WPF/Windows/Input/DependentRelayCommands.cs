@@ -7,6 +7,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 
 namespace CCSWE.Windows.Input
 {
+    //TODO: Move this to another project so the main library doesn't have a dependency on MVVM light
     public class DependentRelayCommand : RelayCommand
     {
 

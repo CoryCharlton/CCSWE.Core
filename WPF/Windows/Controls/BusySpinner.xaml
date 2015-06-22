@@ -11,23 +11,27 @@
              FontSize="24" FontWeight="Bold">
 
     <UserControl.Resources>
-        <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Storyboard x:Key="SpinnerGridStoryboard" Storyboard.TargetName="SpinnerGrid">
+            <DoubleAnimation Storyboard.TargetName="BusySpinnerRotateTransform" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="00:00:01" RepeatBehavior="Forever" />
+        </Storyboard>
+
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Height="{Binding ActualHeight, ElementName=TextLabel}" Margin="0,15" Visibility="{Binding Text, Converter={StaticResource NotNullToVisibilityConverter}, ElementName=BusySpinnerControl}">
+            <Label Height="{Binding ActualHeight, ElementName=TextLabel}" Margin="0,15" Visibility="{Binding Text, Converter={StaticResource StringToVisibilityConverter}, ElementName=BusySpinnerControl}">
                 
             </Label>
             <Grid x:Name="SpinnerGrid" RenderTransformOrigin="0.5,0.5" Height="{Binding SpinnerWidth, Mode=OneWay, ElementName=BusySpinnerControl}" Width="{Binding SpinnerWidth, Mode=OneWay, ElementName=BusySpinnerControl}" HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <Grid.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <!--<EventTrigger RoutedEvent="FrameworkElement.Loaded">
                         <BeginStoryboard>
                             <Storyboard Storyboard.TargetName="SpinnerGrid">
                                 <DoubleAnimation Storyboard.TargetName="BusySpinnerRotateTransform" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="00:00:01" RepeatBehavior="Forever" />
                             </Storyboard>
                         </BeginStoryboard>
-                    </EventTrigger>
+                    </EventTrigger>-->
                 </Grid.Triggers>
                 <Grid.RenderTransform>
                     <TransformGroup>
@@ -49,7 +53,7 @@
 
             <!-- TODO: Control Visibility -->
             <!-- TODO: Offset this so the spinner is centered [Hack with label above...]-->
-            <Label x:Name="TextLabel" FontSize="{Binding FontSize, ElementName=BusySpinnerControl}" HorizontalAlignment="Center" Margin="0,15"  VerticalAlignment="Center" Visibility="{Binding Text, Converter={StaticResource NotNullToVisibilityConverter}, ElementName=BusySpinnerControl}">
+            <Label x:Name="TextLabel" FontSize="{Binding FontSize, ElementName=BusySpinnerControl}" HorizontalAlignment="Center" Margin="0,15"  VerticalAlignment="Center" Visibility="{Binding Text, Converter={StaticResource StringToVisibilityConverter}, ElementName=BusySpinnerControl}">
                 <Label.CacheMode>
                     <BitmapCache EnableClearType="True"/>
                 </Label.CacheMode>

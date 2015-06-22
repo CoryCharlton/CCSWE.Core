@@ -61,11 +61,6 @@ namespace CCSWE.Collections.ObjectModel
         {
             get
             {
-                //TODO: Do I need a lock here?
-                // There is no IList<T>.IsFixedSize, so we must assume that only
-                // readonly collections are fixed size, if our internal item 
-                // collection does not implement IList.  Note that Array implements
-                // IList, and therefore T[] and U[] will be fixed-size.
                 var list = _items as IList;
                 if (list != null)
                 {
@@ -86,7 +81,6 @@ namespace CCSWE.Collections.ObjectModel
             get { return _items.IsReadOnly; }
         }
 
-        //TODO: Does this mean what I think it does?
         bool ICollection.IsSynchronized
         {
             get { return true; }

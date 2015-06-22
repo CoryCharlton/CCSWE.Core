@@ -24,6 +24,7 @@ namespace CCSWE.Collections.Generic
             _queue = new Queue<T>(capacity);
         }
         #endregion
+
         #region Private Fields
         private readonly object _lock = new object();
         private readonly Queue<T> _queue;
@@ -87,7 +88,7 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        //TODO: Implement
+        //TODO: ThreadSafeQueue<T> ICollection.CopyTo(Array array, int index) - Implement
         void ICollection.CopyTo(Array array, int index)
         {
             throw new NotImplementedException("Hope you didn't need this :)");
@@ -147,7 +148,7 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        //TODO: Lock these enumerator methods?
+        //TODO: ThreadSafeQueue<T> - Return a copy?
         public Queue<T>.Enumerator GetEnumerator()
         {
             return _queue.GetEnumerator();

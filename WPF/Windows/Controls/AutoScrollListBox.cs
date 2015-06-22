@@ -17,8 +17,6 @@ namespace CCSWE.Windows.Controls
         #endregion
 
         #region Private Fields
-        private bool _isExecutingEndOfListCommand;
-        private readonly object _lock = new object();
         #endregion
 
         #region Dependency Properties
@@ -67,21 +65,9 @@ namespace CCSWE.Windows.Controls
                 if (ratio >= 0.9)
                 //if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
                 {
-                    if (EndOfListCommand != null)
+                    if (EndOfListCommand != null && EndOfListCommand.CanExecute(null))
                     {
-                        if (_isExecutingEndOfListCommand)
-                        {
-                            return;
-                        }
-
-                        lock (_lock)
-                        {
-                            _isExecutingEndOfListCommand = true;
-
-                            EndOfListCommand.Execute(null);
-
-                            _isExecutingEndOfListCommand = false;
-                        }
+                        EndOfListCommand.Execute(null);
                     }
                 }
 

@@ -77,8 +77,9 @@
     </Compile>
     <Compile Include="Windows\Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Windows\Converters\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Windows\Converters\NotNullToVisibilityConverter.cs" />
+    <Compile Include="Windows\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Windows\Converters\ReversedBooleanConverter.cs" />
+    <Compile Include="Windows\Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Windows\Input\DependentRelayCommands.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +97,12 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Core\CCSWE.Core.csproj">
+      <Project>{7acefefb-fb06-4c20-845e-00a993a20ef4}</Project>
+      <Name>CCSWE.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

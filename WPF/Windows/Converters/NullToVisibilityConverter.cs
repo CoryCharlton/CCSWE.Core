@@ -5,12 +5,15 @@ using System.Windows.Data;
 
 namespace CCSWE.Windows.Converters
 {
-    public class NotNullToVisibilityConverter: IValueConverter
+    /// <summary>
+    /// An <see cref="IValueConverter"/> that converts a null value into a <see cref="Visibility"/>
+    /// </summary>
+    public class NullToVisibilityConverter: IValueConverter
     {
         #region Public Methods
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? Visibility.Visible : Visibility.Collapsed;
+            return value == null ? Visibility.Collapsed : Visibility.Visible ;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

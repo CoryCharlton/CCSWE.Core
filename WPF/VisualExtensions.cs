@@ -5,6 +5,12 @@ namespace CCSWE
 {
     public static class VisualExtensions
     {
+        /// <summary>
+        /// Searches the visual tree for a <see cref="FrameworkElement"/> with the supplied name
+        /// </summary>
+        /// <param name="element">The parent <see cref="Visual"/> to begin searching from</param>
+        /// <param name="name">The name of the target <see cref="FrameworkElement"/></param>
+        /// <returns>The <see cref="FrameworkElement"/> if found</returns>
         public static FrameworkElement GetDescendantByName(this Visual element, string name)
         {
             if (element == null)
@@ -35,6 +41,12 @@ namespace CCSWE
             return null;
         }
 
+        /// <summary>
+        /// Searches the visual tree for the first child of the supplied type
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="Visual"/> we are searching for</typeparam>
+        /// <param name="element">The parent <see cref="Visual"/> to begin searching from</param>
+        /// <returns>The descendant if found</returns>
         public static T GetDescendantByType<T>(this Visual element) where T : class
         {
             if (element == null)
