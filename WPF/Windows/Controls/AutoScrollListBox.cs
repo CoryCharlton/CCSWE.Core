@@ -20,15 +20,15 @@ namespace CCSWE.Windows.Controls
         #endregion
 
         #region Dependency Properties
-        public static readonly DependencyProperty EndOfListCommandProperty = DependencyProperty.Register("EndOfListCommand", typeof(ICommand), typeof(AutoScrollListBox), new PropertyMetadata(null));
+        public static readonly DependencyProperty LazyLoadCommandProperty = DependencyProperty.Register("LazyLoadCommand", typeof(ICommand), typeof(AutoScrollListBox), new PropertyMetadata(null));
         public static readonly DependencyProperty IsBusyProperty = DependencyProperty.Register("IsBusy", typeof(bool), typeof(AutoScrollListBox), new PropertyMetadata(false));
         #endregion
 
         #region Public Properties
-        public ICommand EndOfListCommand 
+        public ICommand LazyLoadCommand 
         {
-            get { return (ICommand) GetValue(EndOfListCommandProperty); }
-            set { SetValue(EndOfListCommandProperty, value); }
+            get { return (ICommand)GetValue(LazyLoadCommandProperty); }
+            set { SetValue(LazyLoadCommandProperty, value); }
         }
 
         public bool IsBusy
@@ -65,9 +65,9 @@ namespace CCSWE.Windows.Controls
                 if (ratio >= 0.9)
                 //if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
                 {
-                    if (EndOfListCommand != null && EndOfListCommand.CanExecute(null))
+                    if (LazyLoadCommand != null && LazyLoadCommand.CanExecute(null))
                     {
-                        EndOfListCommand.Execute(null);
+                        LazyLoadCommand.Execute(null);
                     }
                 }
 
