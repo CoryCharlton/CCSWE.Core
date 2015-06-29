@@ -34,6 +34,24 @@ namespace CCSWE.Collections.ObjectModel
                 _items.Add(item);
             }
         }
+        
+        public SynchronizedObservableCollection(SynchronizationContext context)
+        {
+            _context = context;
+        }
+
+        public SynchronizedObservableCollection(IEnumerable<T> collection, SynchronizationContext context): this(context)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection", "'collection' cannot be null");
+            }
+
+            foreach (var item in collection)
+            {
+                _items.Add(item);
+            }
+        }
         #endregion
 
         #region Private Fields
