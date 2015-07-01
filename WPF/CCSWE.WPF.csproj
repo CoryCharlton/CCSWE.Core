@@ -69,6 +69,8 @@
     <Compile Include="DispatcherExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen.cs" />
+    <Compile Include="Threading\Tasks\NotifyTaskCompletion.cs" />
+    <Compile Include="Threading\Tasks\NotifyTaskCompletion`1.cs" />
     <Compile Include="VisualExtensions.cs" />
     <Compile Include="Windows\Controls\AutoScrollListBox.cs" />
     <Compile Include="Windows\Converters\BooleanConverter`1.cs" />
@@ -80,7 +82,12 @@
     <Compile Include="Windows\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Windows\Converters\ReversedBooleanConverter.cs" />
     <Compile Include="Windows\Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Windows\Input\AsyncCommand.cs" />
+    <Compile Include="Windows\Input\AsyncCommand`1.cs" />
+    <Compile Include="Windows\Input\AsyncCommandBase.cs" />
+    <Compile Include="Windows\Input\CancellableAsyncCommand`1.cs" />
     <Compile Include="Windows\Input\DependentRelayCommands.cs" />
+    <Compile Include="Windows\Input\IAsyncCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Windows\Controls\BusySpinner.xaml">
