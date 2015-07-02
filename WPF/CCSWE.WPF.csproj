@@ -79,9 +79,11 @@
     </Compile>
     <Compile Include="Windows\Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Windows\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Windows\Converters\IdealForegroundConverter.cs" />
     <Compile Include="Windows\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Windows\Converters\ReversedBooleanConverter.cs" />
     <Compile Include="Windows\Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Windows\Controls\CustomWindow.cs" />
     <Compile Include="Windows\Input\AsyncCommand.cs" />
     <Compile Include="Windows\Input\AsyncCommand`1.cs" />
     <Compile Include="Windows\Input\AsyncCommandBase.cs" />
@@ -90,6 +92,14 @@
     <Compile Include="Windows\Input\IAsyncCommand.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\CustomWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\Controls\BusySpinner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -110,6 +120,7 @@
       <Name>CCSWE.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
