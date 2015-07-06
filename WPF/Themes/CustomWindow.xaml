@@ -46,106 +46,103 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="CustomWindowControlTemplate" TargetType="controls:CustomWindow">
+        <Grid MinHeight="{TemplateBinding MinHeight}" MinWidth="{TemplateBinding MinWidth}">
+            <AdornerDecorator>
+                <Grid x:Name="LayoutRoot" Background="{TemplateBinding BorderBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="15" />
+                    </Grid.RowDefinitions>
+
+                    <!--<Rectangle x:Name="Border" Grid.Row="0" Grid.RowSpan="3" Fill="{TemplateBinding BorderBrush}"/>-->
+
+                    <Border x:Name="ContentRoot" Grid.Row="1" Grid.RowSpan="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding ContentBorderBrush}" BorderThickness="1" Margin="{TemplateBinding BorderThickness}">
+                        <ContentPresenter />
+                    </Border>
+
+                    <Rectangle x:Name="CaptionBackground" Grid.Row="0" Height="25" Fill="{TemplateBinding BorderBrush}" VerticalAlignment="Top" />
+
+                    <StackPanel Grid.Row="0" Margin="6,5,0,0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Image MaxHeight="16" MaxWidth="16" HorizontalAlignment="Left" Source="{TemplateBinding Icon}" VerticalAlignment="Center"></Image>
+                        <TextBlock x:Name="WindowTitleTextBlock" Text="{TemplateBinding Title}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"  Margin="6,0,0,0"  FontSize="14.667"  Foreground="{TemplateBinding TitleForeground}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal"  VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" >
+                        <Button x:Name="Minimize" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.MinimizeWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Minimize" Style="{StaticResource CustomWindowCaptionButton}">
+                            <Button.Content>
+                                <Grid Width="35" Height="25">
+                                    <TextBlock Text="0" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="3.5,0,0,3" />
+                                </Grid>
+                            </Button.Content>
+                        </Button>
+                        <Grid Margin="1,0,1,0">
+                            <Button x:Name="Restore" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.RestoreWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Restore" Visibility="Collapsed" Style="{StaticResource CustomWindowCaptionButton}">
+                                <Button.Content>
+                                    <Grid Width="35" Height="25" UseLayoutRounding="True">
+                                        <TextBlock Text="2" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2,0,0,1" />
+                                    </Grid>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="Maximize" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.MaximizeWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Maximize" Style="{StaticResource CustomWindowCaptionButton}">
+                                <Button.Content>
+                                    <Grid Width="35" Height="25">
+                                        <TextBlock Text="1" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2,0,0,1" />
+                                    </Grid>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                        <Button BorderThickness="1,0,0,1" Command="{Binding Source={x:Static SystemCommands.CloseWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Close" Style="{StaticResource CustomWindowCaptionButton}">
+                            <Button.Content>
+                                <Grid Width="35" Height="25">
+                                    <TextBlock Text="r" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,0,1" />
+                                </Grid>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                    <Grid Grid.Row="2">
+                        <Path x:Name="ResizeGrip" Visibility="Collapsed" Width="12" Height="12" Margin="1" HorizontalAlignment="Right" Stroke="{TemplateBinding ResizeGripForeground}" StrokeThickness="1" Stretch="None" Data="F1 M1,10 L3,10 M5,10 L7,10 M9,10 L11,10 M2,9 L2,11 M6,9 L6,11 M10,9 L10,11 M5,6 L7,6 M9,6 L11,6 M6,5 L6,7 M10,5 L10,7 M9,2 L11,2 M10,1 L10,3" />
+                    </Grid>
+
+                    <Rectangle x:Name="ActiveBorder" Grid.Row="0" Grid.RowSpan="3" Stroke="{TemplateBinding ActiveBorderBrush}" StrokeThickness="1" Visibility="{Binding IsActive, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </AdornerDecorator>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter TargetName="ContentRoot" Property="BorderThickness" Value="0,1,0,0"/>
+                <Setter TargetName="ContentRoot" Property="Margin" Value="0,7,0,0" />
+                <Setter TargetName="LayoutRoot" Property="Margin" Value="7" />
+                <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="Restore" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="WindowState" Value="Normal">
+                <Setter TargetName="Maximize" Property="Visibility" Value="Visible" />
+                <Setter TargetName="Restore" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="ResizeMode" Value="NoResize">
+                <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="Minimize" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="Restore" Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="ResizeMode" Value="CanResizeWithGrip" />
+                    <Condition Property="WindowState" Value="Normal" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="ResizeGrip" Property="Visibility" Value="Visible" />
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
     <Style TargetType="{x:Type controls:CustomWindow}">
         <Setter Property="BorderThickness" Value="7"/>
         <Setter Property="FontSize" Value="14.667"/>
         <Setter Property="ResizeMode" Value="CanResizeWithGrip" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="controls:CustomWindow">
-                    <Grid>
-                        <AdornerDecorator>
-                            <Grid x:Name="LayoutRoot">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="15" />
-                                </Grid.RowDefinitions>
-
-                                <Rectangle x:Name="Border" Grid.Row="0" Grid.RowSpan="3" Fill="{TemplateBinding BorderBrush}"/>
-
-                                <!-- TODO: Create a DP for inner border -->
-                                <Border x:Name="ContentRoot" Grid.Row="1" Grid.RowSpan="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding ContentBorderBrush}" BorderThickness="1" Margin="{TemplateBinding BorderThickness}">
-                                    <ContentPresenter />
-                                </Border>
-
-                                <Rectangle x:Name="CaptionBackground" Grid.Row="0" Height="25" Fill="{TemplateBinding BorderBrush}" VerticalAlignment="Top" />
-
-                                <StackPanel Grid.Row="0" Margin="6,5,0,0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                    <Image MaxHeight="16" MaxWidth="16" HorizontalAlignment="Left" Source="{TemplateBinding Icon}" VerticalAlignment="Center"></Image>
-                                    <TextBlock x:Name="WindowTitleTextBlock" Text="{TemplateBinding Title}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"  Margin="6,0,0,0"  FontSize="14.667"  Foreground="{TemplateBinding TitleForeground}"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="0" HorizontalAlignment="Right" Orientation="Horizontal"  VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" >
-                                    <Button x:Name="Minimize" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.MinimizeWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Minimize" Style="{StaticResource CustomWindowCaptionButton}">
-                                        <Button.Content>
-                                            <Grid Width="35" Height="25">
-                                                <TextBlock Text="0" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="3.5,0,0,3" />
-                                            </Grid>
-                                        </Button.Content>
-                                    </Button>
-                                    <Grid Margin="1,0,1,0">
-                                        <Button x:Name="Restore" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.RestoreWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Restore" Visibility="Collapsed" Style="{StaticResource CustomWindowCaptionButton}">
-                                            <Button.Content>
-                                                <Grid Width="35" Height="25" UseLayoutRounding="True">
-                                                    <TextBlock Text="2" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2,0,0,1" />
-                                                </Grid>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button x:Name="Maximize" BorderThickness="1,0,1,1" Command="{Binding Source={x:Static SystemCommands.MaximizeWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Maximize" Style="{StaticResource CustomWindowCaptionButton}">
-                                            <Button.Content>
-                                                <Grid Width="35" Height="25">
-                                                    <TextBlock Text="1" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2,0,0,1" />
-                                                </Grid>
-                                            </Button.Content>
-                                        </Button>
-                                    </Grid>
-                                    <Button BorderThickness="1,0,0,1" Command="{Binding Source={x:Static SystemCommands.CloseWindowCommand}}" Foreground="{TemplateBinding CaptionButtonForeground}" ToolTip="Close" Style="{StaticResource CustomWindowCaptionButton}">
-                                        <Button.Content>
-                                            <Grid Width="35" Height="25">
-                                                <TextBlock Text="r" FontFamily="Marlett" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,0,0,1" />
-                                            </Grid>
-                                        </Button.Content>
-                                    </Button>
-                                </StackPanel>
-
-                                <Grid Grid.Row="2">
-                                    <Path x:Name="ResizeGrip" Visibility="Collapsed" Width="12" Height="12" Margin="1" HorizontalAlignment="Right" Stroke="{TemplateBinding ResizeGripForeground}" StrokeThickness="1" Stretch="None" Data="F1 M1,10 L3,10 M5,10 L7,10 M9,10 L11,10 M2,9 L2,11 M6,9 L6,11 M10,9 L10,11 M5,6 L7,6 M9,6 L11,6 M6,5 L6,7 M10,5 L10,7 M9,2 L11,2 M10,1 L10,3" />
-                                </Grid>
-
-                                <Rectangle x:Name="ActiveBorder" Grid.Row="0" Grid.RowSpan="3" Stroke="{TemplateBinding ActiveBorderBrush}" StrokeThickness="1" Visibility="{Binding IsActive, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                            </Grid>
-                        </AdornerDecorator>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="WindowState" Value="Maximized">
-                            <Setter TargetName="ContentRoot" Property="BorderThickness" Value="0,1,0,0"/>
-                            <Setter TargetName="ContentRoot" Property="Margin" Value="0,7,0,0" />
-                            <Setter TargetName="LayoutRoot" Property="Margin" Value="7" />
-                            <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="Restore" Property="Visibility" Value="Visible" />
-                        </Trigger>
-                        <Trigger Property="WindowState" Value="Normal">
-                            <Setter TargetName="Maximize" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="Restore" Property="Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <Trigger Property="ResizeMode" Value="NoResize">
-                            <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="Minimize" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="Restore" Property="Visibility" Value="Collapsed"/>
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="ResizeMode" Value="CanResizeWithGrip" />
-                                <Condition Property="WindowState" Value="Normal" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ResizeGrip" Property="Visibility" Value="Visible" />
-                        </MultiTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource CustomWindowControlTemplate}" />
         <Setter Property="CaptionButtonForeground">
             <Setter.Value>
                 <MultiBinding Converter="{x:Static converters:IdealForegroundConverter.Instance}">

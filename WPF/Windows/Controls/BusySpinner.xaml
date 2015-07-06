@@ -8,7 +8,9 @@
 			 mc:Ignorable="d" 
 			 d:DesignHeight="100" d:DesignWidth="100"
              Background="#AA000000"
-             FontSize="24" FontWeight="Bold">
+             FontSize="24"
+             FontWeight="Bold"
+             UseLayoutRounding="True">
 
     <UserControl.Resources>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -24,15 +26,6 @@
             <!--<Label Height="{Binding ActualHeight, ElementName=TextLabel}" Margin="0,15" Visibility="{Binding Text, Converter={StaticResource StringToVisibilityConverter}, ElementName=BusySpinnerControl}"></Label>-->
             
             <Grid x:Name="SpinnerGrid" RenderTransformOrigin="0.5,0.5" Height="{Binding SpinnerWidth, Mode=OneWay, ElementName=BusySpinnerControl}" Width="{Binding SpinnerWidth, Mode=OneWay, ElementName=BusySpinnerControl}" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                <Grid.Triggers>
-                    <!--<EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard>
-                            <Storyboard Storyboard.TargetName="SpinnerGrid">
-                                <DoubleAnimation Storyboard.TargetName="BusySpinnerRotateTransform" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="00:00:01" RepeatBehavior="Forever" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>-->
-                </Grid.Triggers>
                 <Grid.RenderTransform>
                     <TransformGroup>
                         <RotateTransform x:Name="BusySpinnerRotateTransform"/>
@@ -46,7 +39,7 @@
                 </Grid.OpacityMask>
                 <Ellipse Fill="CornflowerBlue">
                     <Ellipse.OpacityMask>
-                        <ImageBrush ImageSource="/CCSWE.WPF;component/Images/SpinnerMask.png"/>
+                        <ImageBrush ImageSource="/CCSWE.WPF;component/Assets/SpinnerMask.png"/>
                     </Ellipse.OpacityMask>
                 </Ellipse>
             </Grid>
@@ -54,19 +47,14 @@
             <!-- TODO: Control Visibility -->
             <!-- TODO: Offset this so the spinner is centered [Hack with label above...]-->
             <Label x:Name="TextLabel" FontSize="{Binding FontSize, ElementName=BusySpinnerControl}" HorizontalAlignment="Center" Margin="0,15"  VerticalAlignment="Center" Visibility="{Binding Text, Converter={StaticResource StringToVisibilityConverter}, ElementName=BusySpinnerControl}">
-                <Label.CacheMode>
+                <!--<Label.CacheMode>
                     <BitmapCache EnableClearType="True"/>
-                </Label.CacheMode>
+                </Label.CacheMode>-->
                 <Label.Effect>
                     <DropShadowEffect />
                 </Label.Effect>
-                <TextBlock Text="{Binding Text, ElementName=BusySpinnerControl}">
-                    <!--<TextBlock.CacheMode>
-                        <BitmapCache EnableClearType="True"></BitmapCache>
-                    </TextBlock.CacheMode>-->
-                </TextBlock>
+                <TextBlock Text="{Binding Text, ElementName=BusySpinnerControl}" />
             </Label>
         </StackPanel>
-        <Grid Canvas.Top="100" VerticalAlignment="Center"></Grid>
     </Grid>
 </UserControl>

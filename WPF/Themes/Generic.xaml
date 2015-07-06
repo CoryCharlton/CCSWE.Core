@@ -4,6 +4,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/CCSWE.WPF;component/Themes/CustomWindow.xaml" />
+        <ResourceDictionary Source="/CCSWE.WPF;component/Themes/TemplateBorder.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
