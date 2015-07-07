@@ -66,6 +66,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AutoRevision\AutoRevision.cs">
+      <Link>AutoRevision.cs</Link>
+    </Compile>
     <Compile Include="DispatcherExtensions.cs" />
     <Compile Include="ImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,12 +89,15 @@
     <Compile Include="Windows\Converters\ReversedBooleanConverter.cs" />
     <Compile Include="Windows\Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Windows\Controls\CustomWindow.cs" />
+    <Compile Include="Windows\Converters\ThicknessConverter.cs" />
+    <Compile Include="Windows\Converters\ThicknessToDoubleConverter.cs" />
     <Compile Include="Windows\Input\AsyncCommand.cs" />
     <Compile Include="Windows\Input\AsyncCommand`1.cs" />
     <Compile Include="Windows\Input\AsyncCommandBase.cs" />
     <Compile Include="Windows\Input\CancellableAsyncCommand`1.cs" />
     <Compile Include="Windows\Input\DependentRelayCommands.cs" />
     <Compile Include="Windows\Input\IAsyncCommand.cs" />
+    <Compile Include="Windows\ThicknessSides.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\TemplateBorder.xaml">
@@ -126,7 +132,9 @@
       <Name>CCSWE.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Windows\Media\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
