@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AutoRevision\AutoRevision.cs">
-      <Link>AutoRevision.cs</Link>
+    <Compile Include="..\AssemblyVersion\AssemblyVersion.cs">
+      <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Collections\Generic\ThreadSafeQueue`1.cs" />
     <Compile Include="Collections\ObjectModel\SynchronizedObservableCollection`1.cs" />

@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2B6B3A
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.AutoRevision", "AutoRevision\CCSWE.AutoRevision.csproj", "{21FC36B0-839F-4561-B1CB-C5E04C1080B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyVersion", "AssemblyVersion\AssemblyVersion.csproj", "{21FC36B0-839F-4561-B1CB-C5E04C1080B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CCSWE</RootNamespace>
-    <AssemblyName>CCSWE.AutoRevision</AssemblyName>
+    <AssemblyName>CCSWE Libraries Assembly Version</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -37,19 +37,19 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="AutoRevision.tt">
+    <None Include="AssemblyVersion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AutoRevision.cs</LastGenOutput>
+      <LastGenOutput>AssemblyVersion.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoRevision.cs">
+    <Compile Include="AssemblyVersion.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>AutoRevision.tt</DependentUpon>
+      <DependentUpon>AssemblyVersion.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
