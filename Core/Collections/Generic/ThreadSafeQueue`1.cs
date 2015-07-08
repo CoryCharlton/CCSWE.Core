@@ -5,7 +5,8 @@ using System.Threading;
 
 namespace CCSWE.Collections.Generic
 {
-    //TODO: Change to ReaderWriterLockSlim?
+    //TODO: ThreadSafeQueue<T> - Add xmldoc
+    //TODO: ThreadSafeQueue<T> - Change to ReaderWriterLockSlim?
     public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection
     {
         #region Constructor
@@ -154,6 +155,7 @@ namespace CCSWE.Collections.Generic
             return _queue.GetEnumerator();
         }
 
+        // ReSharper disable RedundantCast
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return (IEnumerator<T>) GetEnumerator();
@@ -163,6 +165,7 @@ namespace CCSWE.Collections.Generic
         {
             return (IEnumerator) GetEnumerator();
         }
+        // ReSharper restore RedundantCast
 
         public T Peek()
         {

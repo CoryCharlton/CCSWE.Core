@@ -6,7 +6,8 @@ using System.Threading;
 
 namespace CCSWE.Collections.ObjectModel
 {
-    //TODO: Clean this up...
+    //TODO: SynchronizedReadOnlyObservableCollection<T> - Add xmldoc
+    //TODO: SynchronizedReadOnlyObservableCollection<T> - Clean this up...
     public class SynchronizedReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         #region Constructor

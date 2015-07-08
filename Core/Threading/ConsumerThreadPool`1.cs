@@ -18,15 +18,16 @@ namespace CCSWE.Threading
         /// </summary>
         /// <param name="consumersThreads">The number of consumber threads to create.</param>
         /// <param name="processItem">The function responsible for processing items added.</param>
-        public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem)
+        /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
+        public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, ThreadPriority threadPriority = ThreadPriority.BelowNormal)
         {
             _items = new BlockingCollection<T>(new ConcurrentQueue<T>());
             _processItem = processItem;
 
             for (var i = 0; i < consumersThreads; i++)
             {
-                var workerThread = new Thread(ConsumerThread) { IsBackground = true, Priority = ThreadPriority.BelowNormal };
-                workerThread.Start();
+                var consumerThread = new Thread(ConsumerThread) { IsBackground = true, Priority = threadPriority };
+                consumerThread.Start();
             }
         }
         #endregion
@@ -102,7 +103,7 @@ namespace CCSWE.Threading
 
                     if (itemsProcessed > 0)
                     {
-                        var progress = ((double) itemsProcessed/totalItems)*100.0;
+                        var progress = ((double) itemsProcessed/totalItems) * 100.0;
                         if (progress > 100.0)
                         {
                             progress = 100;
@@ -126,7 +127,7 @@ namespace CCSWE.Threading
             _consumerThreadTracker.EndOperation();
             //TODO: ConsumerThreadPool<T> - Raise IsCompleted property changed?
 
-            Debug.WriteLine("ConsumerThread exiting... " + _consumerThreadTracker.OperationsRunning);
+            Debug.WriteLine("ConsumerThread exiting... Active threads: " + _consumerThreadTracker.OperationsRunning + " -- IsCompleted: " + IsCompleted);
         }
         #endregion
 

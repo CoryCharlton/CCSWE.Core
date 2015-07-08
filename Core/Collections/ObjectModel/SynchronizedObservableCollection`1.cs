@@ -10,7 +10,8 @@ using System.Threading;
 
 namespace CCSWE.Collections.ObjectModel
 {
-    //TODO: ObservableCollection<T>.Move() is not implemented...
+    //TODO: SynchronizedObservableCollection<T> - Add xmldoc
+    //TODO: SynchronizedObservableCollection<T> - ObservableCollection<T>.Move() is not implemented...
     [Serializable]
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]

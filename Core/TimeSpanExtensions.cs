@@ -3,16 +3,16 @@
 namespace CCSWE
 {
     /// <summary>
-    /// Contains extension methods for <see cref="TimeSpan"/>
+    /// Contains extension methods for <see cref="TimeSpan"/>.
     /// </summary>
     public static class TimeSpanExtensions
     {
         /// <summary>
-        /// Converts a TimeSpan to a formatted string
+        /// Converts a <see cref="TimeSpan"/> to a formatted string.
         /// </summary>
-        /// <param name="timeSpan">The TimeSpan to convert</param>
-        /// <param name="showMilliseconds">Whether or not to display milliseconds</param>
-        /// <returns>A formatted string</returns>
+        /// <param name="timeSpan">The <see cref="TimeSpan"/> to convert.</param>
+        /// <param name="showMilliseconds">Whether or not to display milliseconds.</param>
+        /// <returns>A formatted string.</returns>
         public static string ToFriendlyString(this TimeSpan timeSpan, bool showMilliseconds = false)
         {
             string returnValue;
