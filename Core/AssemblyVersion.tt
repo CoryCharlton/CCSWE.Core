@@ -9,5 +9,5 @@ using System.Reflection;
 [assembly: AssemblyVersion("1.0.<#= this.BuildRevisionNumber #>")]
 [assembly: AssemblyFileVersion("1.0.<#= this.BuildRevisionNumber #>")]
 <#+
-    string BuildRevisionNumber = (DateTime.UtcNow - new DateTime(2015,1,1)).TotalDays.ToString("##.00000");
+    string BuildRevisionNumber = (DateTime.UtcNow - new DateTime(2015,1,1)).TotalDays.ToString("##.0000");
 #>
