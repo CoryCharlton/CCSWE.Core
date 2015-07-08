@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CCSWE.Core")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Just a bunch of C# .NET classes and extension methods I find useful.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CCSWE")]
 [assembly: AssemblyProduct("CCSWE.Core")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

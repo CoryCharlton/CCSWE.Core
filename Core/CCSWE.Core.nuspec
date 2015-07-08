@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>machx0r</authors>
+    <owners>machx0r</owners>
+    <licenseUrl>https://github.com/machx0r/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/machx0r/CCSWE-Libraries</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial push to NuGet.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags></tags>
+  </metadata>
+</package>

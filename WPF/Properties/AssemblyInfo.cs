@@ -6,9 +6,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CCSWE.WPF")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Just a bunch of C# .NET classes and extension methods I find useful.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CCSWE")]
 [assembly: AssemblyProduct("CCSWE.WPF")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
