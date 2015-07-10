@@ -120,7 +120,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FodyWeavers.xml" />
+    <None Include="FodyWeavers.xml" />
     <Resource Include="Assets\SpinnerMask.png" />
   </ItemGroup>
   <ItemGroup>
