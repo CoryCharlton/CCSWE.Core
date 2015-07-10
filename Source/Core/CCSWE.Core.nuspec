@@ -4,13 +4,13 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>machx0r</authors>
-    <owners>machx0r</owners>
-    <licenseUrl>https://github.com/machx0r/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>https://github.com/machx0r/CCSWE-Libraries</projectUrl>
+    <authors>Cory Charlton</authors>
+    <owners>Cory Charlton</owners>
+    <licenseUrl>https://github.com/CoryCharlton/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/CoryCharlton/CCSWE-Libraries</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial push to NuGet.</releaseNotes>
+    <releaseNotes>Updating URLs.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags></tags>
   </metadata>
