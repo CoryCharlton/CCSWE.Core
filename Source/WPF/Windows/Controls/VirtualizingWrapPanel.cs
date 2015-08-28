@@ -44,9 +44,9 @@ namespace CCSWE.Windows.Controls
         #endregion
 
         #region Dependency Properties
-        public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register("ItemHeight", typeof(double), typeof(VirtualizingWrapPanel), new FrameworkPropertyMetadata(double.PositiveInfinity));
-        public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register("ItemWidth", typeof(double), typeof(VirtualizingWrapPanel), new FrameworkPropertyMetadata(double.PositiveInfinity));
-        public static readonly DependencyProperty OrientationProperty = StackPanel.OrientationProperty.AddOwner(typeof(VirtualizingWrapPanel), new FrameworkPropertyMetadata(Orientation.Horizontal));
+        public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register("ItemHeight", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity));
+        public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register("ItemWidth", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity));
+        public static readonly DependencyProperty OrientationProperty = StackPanel.OrientationProperty.AddOwner(typeof(VirtualizingWrapPanel), new UIPropertyMetadata(Orientation.Horizontal));
         #endregion
 
         #region Public Properties
@@ -354,6 +354,8 @@ namespace CCSWE.Windows.Controls
                         // The child has already been created, let's be sure it's in the right spot
                         Debug.Assert(child == _children[childIndex], "Wrong child was generated");
                     }
+                    //TODO: This is too heavy, need a flag...
+                    child.Measure(ChildSlotSize);
 
                     _childSize = child.DesiredSize;
                     var childRect = new Rect(new Point(currentX, currentY), _childSize);
