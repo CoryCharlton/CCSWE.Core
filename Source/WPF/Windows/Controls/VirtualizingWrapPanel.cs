@@ -44,8 +44,8 @@ namespace CCSWE.Windows.Controls
         #endregion
 
         #region Dependency Properties
-        public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register("ItemHeight", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity));
-        public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register("ItemWidth", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity));
+        public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register("ItemHeight", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity), ValidateItemSize);
+        public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register("ItemWidth", typeof(double), typeof(VirtualizingWrapPanel), new UIPropertyMetadata(double.PositiveInfinity), ValidateItemSize);
         public static readonly DependencyProperty OrientationProperty = StackPanel.OrientationProperty.AddOwner(typeof(VirtualizingWrapPanel), new UIPropertyMetadata(Orientation.Horizontal));
         #endregion
 
@@ -59,30 +59,14 @@ namespace CCSWE.Windows.Controls
         public double ItemHeight
         {
             get { return (double)GetValue(ItemHeightProperty); }
-            set
-            {
-                if (value <= 0)
-                {
-                    return;
-                }
-
-                SetValue(ItemHeightProperty, value);
-            }
+            set { SetValue(ItemHeightProperty, value); }
         }
 
         [TypeConverter(typeof(LengthConverter))]
         public double ItemWidth
         {
             get { return (double)GetValue(ItemWidthProperty); }
-            set
-            {
-                if (value <= 0)
-                {
-                    return;
-                }
-
-                SetValue(ItemWidthProperty, value);
-            }
+            set { SetValue(ItemWidthProperty, value); }
         }
 
         public Orientation Orientation
@@ -271,6 +255,11 @@ namespace CCSWE.Windows.Controls
             SetVerticalOffset((index) / Math.Floor((_viewport.Width) / _childSize.Width));
             SetHorizontalOffset((index) / Math.Floor((_viewport.Height) / _childSize.Height));
         }
+
+        private static bool ValidateItemSize(object value)
+        {
+            return ((double) value > 0d);
+        }
         #endregion
 
         #region Protected Methods
@@ -324,6 +313,7 @@ namespace CCSWE.Windows.Controls
             var startPos = _generator.GeneratorPositionFromIndex(firstVisibleIndex);
 
             var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
+            var childSlotSize = ChildSlotSize;
             var current = firstVisibleIndex;
             var visibleSections = 1;
 
@@ -364,14 +354,14 @@ namespace CCSWE.Windows.Controls
 
                         _generator.PrepareItemContainer(child);
 
-                        child.Measure(ChildSlotSize);
+                        child.Measure(childSlotSize);
                     }
                     else
                     {
-                        //TODO: If either child Height or Width == PositiveInfinity and the other side == ChildSlotSize then we probably don't need to measure. Need to test this
-                        if (!child.DesiredSize.Equals(ChildSlotSize))
+                        if ((!childSlotSize.Height.Equals(double.PositiveInfinity) && !child.DesiredSize.Height.Equals(childSlotSize.Height)) || (!childSlotSize.Width.Equals(double.PositiveInfinity) && !child.DesiredSize.Width.Equals(childSlotSize.Width)))
                         {
-                            child.Measure(ChildSlotSize);
+                            // Re-measure if the ChildSlotSize has changed
+                            child.Measure(childSlotSize);
                         }
 
                         // ReSharper disable once PossibleUnintendedReferenceComparison
