@@ -59,14 +59,30 @@ namespace CCSWE.Windows.Controls
         public double ItemHeight
         {
             get { return (double)GetValue(ItemHeightProperty); }
-            set { SetValue(ItemHeightProperty, value); }
+            set
+            {
+                if (value <= 0)
+                {
+                    return;
+                }
+
+                SetValue(ItemHeightProperty, value);
+            }
         }
 
         [TypeConverter(typeof(LengthConverter))]
         public double ItemWidth
         {
             get { return (double)GetValue(ItemWidthProperty); }
-            set { SetValue(ItemWidthProperty, value); }
+            set
+            {
+                if (value <= 0)
+                {
+                    return;
+                }
+
+                SetValue(ItemWidthProperty, value);
+            }
         }
 
         public Orientation Orientation
@@ -345,17 +361,23 @@ namespace CCSWE.Windows.Controls
                         {
                             base.InsertInternalChild(childIndex, child);
                         }
+
                         _generator.PrepareItemContainer(child);
+
                         child.Measure(ChildSlotSize);
                     }
                     else
                     {
+                        //TODO: If either child Height or Width == PositiveInfinity and the other side == ChildSlotSize then we probably don't need to measure. Need to test this
+                        if (!child.DesiredSize.Equals(ChildSlotSize))
+                        {
+                            child.Measure(ChildSlotSize);
+                        }
+
                         // ReSharper disable once PossibleUnintendedReferenceComparison
                         // The child has already been created, let's be sure it's in the right spot
                         Debug.Assert(child == _children[childIndex], "Wrong child was generated");
                     }
-                    //TODO: This is too heavy, need a flag...
-                    child.Measure(ChildSlotSize);
 
                     _childSize = child.DesiredSize;
                     var childRect = new Rect(new Point(currentX, currentY), _childSize);
