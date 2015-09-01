@@ -9,9 +9,9 @@
     <licenseUrl>https://github.com/CoryCharlton/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/CoryCharlton/CCSWE-Libraries</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Updating URLs.</releaseNotes>
+    <description>Just a bunch of controls, converters, and extension methods for WPF.</description>
+    <releaseNotes>Minor bug fixes</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags></tags>
+    <tags>WPF Utilities Controls VirtualizingWrapPanel</tags>
   </metadata>
 </package>

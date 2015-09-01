@@ -9,9 +9,9 @@
     <licenseUrl>https://github.com/CoryCharlton/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/CoryCharlton/CCSWE-Libraries</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Just a bunch of C# .NET classes and extension methods I find useful</description>
-    <releaseNotes>Minor bug fixes</releaseNotes>
+    <description>Native Windows API interop declarations</description>
+    <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Utilities Threading Collections AppSettings Extensions ThreadPool ObservableCollection</tags>
+    <tags>Interop Native Windows API DllImport Gdi32 Shell32 User32</tags>
   </metadata>
 </package>
