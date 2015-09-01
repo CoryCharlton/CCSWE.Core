@@ -46,10 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyVersion.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AssemblyVersion.tt</DependentUpon>
+    <Compile Include="..\Version\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Collections\Generic\ThreadSafeQueue`1.cs" />
     <Compile Include="Collections\ObjectModel\SynchronizedObservableCollection`1.cs" />
@@ -64,10 +62,6 @@
     <Compile Include="TimeSpanExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AssemblyVersion.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyVersion.cs</LastGenOutput>
-    </None>
     <None Include="CCSWE.Core.nuspec">
       <SubType>Designer</SubType>
     </None>

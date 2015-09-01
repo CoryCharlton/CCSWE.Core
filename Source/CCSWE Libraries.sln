@@ -4,8 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.Core", "Core\CCSWE.Core.csproj", "{7ACEFEFB-FB06-4C20-845E-00A993A20EF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F81042C2-E267-4768-98D0-E99B9BA617EB} = {F81042C2-E267-4768-98D0-E99B9BA617EB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.WPF", "WPF\CCSWE.WPF.csproj", "{B45CAF87-A654-435C-B054-8F579059D2A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F81042C2-E267-4768-98D0-E99B9BA617EB} = {F81042C2-E267-4768-98D0-E99B9BA617EB}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2B6B3AB3-A400-4C4D-9A80-F7CBCF356555}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,6 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2B6B3A
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.Native", "Native\CCSWE.Native.csproj", "{915EFB38-96B7-4E9D-A094-23E6F4153825}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F81042C2-E267-4768-98D0-E99B9BA617EB} = {F81042C2-E267-4768-98D0-E99B9BA617EB}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Version", "Version\Version.csproj", "{F81042C2-E267-4768-98D0-E99B9BA617EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +45,10 @@ Global
 		{915EFB38-96B7-4E9D-A094-23E6F4153825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{915EFB38-96B7-4E9D-A094-23E6F4153825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{915EFB38-96B7-4E9D-A094-23E6F4153825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F81042C2-E267-4768-98D0-E99B9BA617EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F81042C2-E267-4768-98D0-E99B9BA617EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F81042C2-E267-4768-98D0-E99B9BA617EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F81042C2-E267-4768-98D0-E99B9BA617EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

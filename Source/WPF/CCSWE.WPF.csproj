@@ -69,10 +69,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyVersion.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AssemblyVersion.tt</DependentUpon>
+    <Compile Include="..\Version\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="DispatcherExtensions.cs" />
     <Compile Include="ImageExtensions.cs" />
@@ -127,10 +125,6 @@
     <Resource Include="Assets\SpinnerMask.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AssemblyVersion.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyVersion.cs</LastGenOutput>
-    </None>
     <None Include="CCSWE.WPF.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
