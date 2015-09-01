@@ -10,6 +10,14 @@ If you find this code useful please consider [donating](https://www.paypal.com/c
 * `ThreadSafeQueue<T>` - A thread safe implementation of `Queue<T>`
 * Miscellaneous extension methods
 
+## CCSWE.Native
+
+Native Windows API interop declarations
+
+* Gdi32
+* Shell32
+* User32
+
 ## CCSWE.WPF
 
 * `AutoScrollListBox`
