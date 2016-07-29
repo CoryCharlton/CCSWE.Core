@@ -11,8 +11,7 @@ namespace CCSWE.Collections.ObjectModel
     public class SynchronizedReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         #region Constructor
-        public SynchronizedReadOnlyObservableCollection(SynchronizedObservableCollection<T> list)
-            : base((IList<T>)list)
+        public SynchronizedReadOnlyObservableCollection(SynchronizedObservableCollection<T> list): base((IList<T>)list)
         {
             _context = SynchronizationContext.Current;
 
@@ -65,7 +64,5 @@ namespace CCSWE.Collections.ObjectModel
             _context.Send(state => propertyChanged(this, e), null);
         }
         #endregion
-
     }
-
 }

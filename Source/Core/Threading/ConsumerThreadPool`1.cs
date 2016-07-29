@@ -10,7 +10,7 @@ namespace CCSWE.Threading
     /// Provides a specialized thread pool to process items from a <see cref="BlockingCollection{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
-    public sealed class ConsumerThreadPool<T>: IDisposable
+    public class ConsumerThreadPool<T> : IDisposable
     {
         #region Constructor
         /// <summary>
@@ -33,6 +33,16 @@ namespace CCSWE.Threading
         /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
         public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, CancellationToken cancellationToken, ThreadPriority threadPriority = ThreadPriority.BelowNormal)
         {
+            if (consumersThreads <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(consumersThreads), consumersThreads, "'consumerThreads' must be greater than zero");
+            }
+
+            if (processItem == null)
+            {
+                throw new ArgumentNullException(nameof(processItem));
+            }
+
             _cancellationToken = cancellationToken;
             _items = new BlockingCollection<T>(new ConcurrentQueue<T>());
             _processItem = processItem;
@@ -48,6 +58,7 @@ namespace CCSWE.Threading
         #region Private Fields
         private readonly CancellationToken _cancellationToken;
         private readonly OperationTracker _consumerThreadTracker = new OperationTracker();
+        private bool _isDisposed;
         private readonly BlockingCollection<T> _items;
         private long _itemsFailed;
         private long _itemsProcessed;
@@ -115,7 +126,6 @@ namespace CCSWE.Threading
                     }
                     catch (OperationCanceledException)
                     {
-                        //TODO: Clear the items?
                         break;
                     }
 
@@ -163,6 +173,22 @@ namespace CCSWE.Threading
         }
         #endregion
 
+        #region Protected Methods
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            CompleteAdding();
+
+            //TODO: ConsumerThreadPool<T> - Wait for completion? Cancel?
+            _items.Dispose();
+            _isDisposed = true;
+        }
+        #endregion
+
         #region Public Methods
         /// <summary>
         /// Adds the item to the <see cref="ConsumerThreadPool{T}"/>.
@@ -202,10 +228,8 @@ namespace CCSWE.Threading
         /// </summary>
         public void Dispose()
         {
-            CompleteAdding();
-
-            //TODO: ConsumerThreadPool<T> - Wait for completion? Cancel?
-            _items.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

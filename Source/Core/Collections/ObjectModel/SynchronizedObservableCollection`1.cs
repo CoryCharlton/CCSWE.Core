@@ -27,7 +27,7 @@ namespace CCSWE.Collections.ObjectModel
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection", "'collection' cannot be null");
+                throw new ArgumentNullException(nameof(collection), "'collection' cannot be null");
             }
 
             foreach (var item in collection)
@@ -45,7 +45,7 @@ namespace CCSWE.Collections.ObjectModel
         {
             if (collection == null)
             {
-                throw new ArgumentNullException("collection", "'collection' cannot be null");
+                throw new ArgumentNullException(nameof(collection), "'collection' cannot be null");
             }
 
             foreach (var item in collection)
@@ -57,6 +57,7 @@ namespace CCSWE.Collections.ObjectModel
 
         #region Private Fields
         private readonly SynchronizationContext _context;
+        private bool _isDisposed;
         private readonly IList<T> _items = new List<T>();
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
         [NonSerialized] private Object _syncRoot;
@@ -307,6 +308,19 @@ namespace CCSWE.Collections.ObjectModel
         }
         #endregion
 
+        #region Protected Methods
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _itemsLocker.Dispose();
+            _isDisposed = true;
+        }
+        #endregion
+
         #region Public Methods
         public void Add(T item)
         {
@@ -517,7 +531,8 @@ namespace CCSWE.Collections.ObjectModel
 
         public void Dispose()
         {
-            _itemsLocker.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -690,10 +705,7 @@ namespace CCSWE.Collections.ObjectModel
         {
             private int _busyCount;
 
-            public bool Busy
-            {
-                get { return _busyCount > 0; }
-            }
+            public bool Busy => _busyCount > 0;
 
             public void Enter()
             {
