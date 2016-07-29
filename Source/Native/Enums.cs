@@ -157,7 +157,7 @@ namespace CCSWE.Native
         USER = 0x400,
         SETREDRAW = 11,
         EXITSIZEMOVE = 0x232,
-
+        QUERYENDSESSION = 0x11,
         NOTIFY = 0x004E,
 
         /* RichEdit messages */

@@ -10,7 +10,7 @@ namespace CCSWE.Threading
     /// Provides a specialized thread pool to process items from a <see cref="BlockingCollection{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
-    public class ConsumerThreadPool<T>: IDisposable
+    public sealed class ConsumerThreadPool<T>: IDisposable
     {
         #region Constructor
         /// <summary>
@@ -19,8 +19,21 @@ namespace CCSWE.Threading
         /// <param name="consumersThreads">The number of consumber threads to create.</param>
         /// <param name="processItem">The function responsible for processing items added.</param>
         /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
-        public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, ThreadPriority threadPriority = ThreadPriority.BelowNormal)
+        public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, ThreadPriority threadPriority = ThreadPriority.BelowNormal) : this(consumersThreads, processItem, CancellationToken.None, threadPriority)
         {
+            // Empty constructor
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsumerThreadPool{T}"/> class specifying the number of consumer threads and the provided function to process items.
+        /// </summary>
+        /// <param name="consumersThreads">The number of consumber threads to create.</param>
+        /// <param name="processItem">The function responsible for processing items added.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to signal that processing should stop</param>
+        /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
+        public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, CancellationToken cancellationToken, ThreadPriority threadPriority = ThreadPriority.BelowNormal)
+        {
+            _cancellationToken = cancellationToken;
             _items = new BlockingCollection<T>(new ConcurrentQueue<T>());
             _processItem = processItem;
 
@@ -33,6 +46,7 @@ namespace CCSWE.Threading
         #endregion
 
         #region Private Fields
+        private readonly CancellationToken _cancellationToken;
         private readonly OperationTracker _consumerThreadTracker = new OperationTracker();
         private readonly BlockingCollection<T> _items;
         private long _itemsFailed;
@@ -46,37 +60,42 @@ namespace CCSWE.Threading
         /// <summary>
         /// Get the number of items that have failed processing.
         /// </summary>
-        public long ItemsFailed { get { return Interlocked.Read(ref _itemsFailed); } }
+        public long ItemsFailed => Interlocked.Read(ref _itemsFailed);
 
         /// <summary>
         /// Gets the total number of items the have been processed.
         /// </summary>
-        public long ItemsProcessed { get { return Interlocked.Read(ref _itemsProcessed); } }
+        public long ItemsProcessed => Interlocked.Read(ref _itemsProcessed);
 
         /// <summary>
         /// Gets the number of items that have successfully processed.
         /// </summary>
-        public long ItemsSuccessful { get { return Interlocked.Read(ref _itemsSuccessful); } }
+        public long ItemsSuccessful => Interlocked.Read(ref _itemsSuccessful);
+
+        /// <summary>
+        /// Gets whether this <see cref="ConsumerThreadPool{T}"/> has been cancelled.
+        /// </summary>
+        public bool IsCancelled => _cancellationToken.IsCancellationRequested;
 
         /// <summary>
         /// Gets whether this <see cref="ConsumerThreadPool{T}"/> has been marked as complete for adding and is empty.
         /// </summary>
-        public bool IsCompleted { get { return _items.IsCompleted && !_consumerThreadTracker.IsOperationRunning; } }
+        public bool IsCompleted => _items.IsCompleted && !_consumerThreadTracker.IsOperationRunning;
 
         /// <summary>
         /// Gets whether this <see cref="ConsumerThreadPool{T}"/> is continuing to accept items and the <see cref="Progress"/> value is accurate.
         /// </summary>
-        public bool IsIndeterminate { get { return !_items.IsAddingCompleted; } }
+        public bool IsIndeterminate => !_items.IsAddingCompleted;
 
         /// <summary>
         /// Gets the progress of this <see cref="ConsumerThreadPool{T}"/>
         /// </summary>
-        public double Progress { get; protected set; }
+        public double Progress { get; private set; }
 
         /// <summary>
         /// Gets the number of items that have been added. 
         /// </summary>
-        public long TotalItems { get { return Interlocked.Read(ref _totalItems); } }
+        public long TotalItems => Interlocked.Read(ref _totalItems);
         #endregion
 
         #region Private Methods
@@ -88,7 +107,18 @@ namespace CCSWE.Threading
             {
                 try
                 {
-                    var item = _items.Take();
+                    T item;
+
+                    try
+                    {
+                        item = _items.Take(_cancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        //TODO: Clear the items?
+                        break;
+                    }
+
                     if (_processItem(item))
                     {
                         Interlocked.Increment(ref _itemsSuccessful);
@@ -103,7 +133,7 @@ namespace CCSWE.Threading
 
                     if (itemsProcessed > 0)
                     {
-                        var progress = ((double) itemsProcessed/totalItems) * 100.0;
+                        var progress = ((double)itemsProcessed / totalItems) * 100.0;
                         if (progress > 100.0)
                         {
                             progress = 100;
@@ -127,7 +157,9 @@ namespace CCSWE.Threading
             _consumerThreadTracker.EndOperation();
             //TODO: ConsumerThreadPool<T> - Raise IsCompleted property changed?
 
-            Debug.WriteLine("ConsumerThread exiting... Active threads: " + _consumerThreadTracker.OperationsRunning + " -- IsCompleted: " + IsCompleted);
+#if DEBUG
+            Debug.WriteLine("ConsumerThread exiting... Active threads: " + _consumerThreadTracker.OperationsRunning);
+#endif
         }
         #endregion
 
@@ -140,12 +172,19 @@ namespace CCSWE.Threading
         {
             if (item == null)
             {
-                throw new ArgumentNullException("item", "'item' cannot be null");
+                throw new ArgumentNullException(nameof(item), "'item' cannot be null");
             }
 
-            _items.Add(item);
+            try
+            {
+                _items.Add(item, _cancellationToken);
 
-            Interlocked.Increment(ref _totalItems);
+                Interlocked.Increment(ref _totalItems);
+            }
+            catch (OperationCanceledException)
+            {
+                CompleteAdding();
+            }
         }
 
         /// <summary>
@@ -181,12 +220,11 @@ namespace CCSWE.Threading
                 throw new InvalidOperationException("Adding is not completed");
             }
 
-            while (!IsCompleted)
+            while (!IsCancelled && !IsCompleted)
             {
-                await Task.Delay(100);
+                await Task.Delay(100, _cancellationToken);
             }
         }
         #endregion
-
     }
 }
