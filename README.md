@@ -6,6 +6,7 @@ If you find this code useful please consider [donating](https://www.paypal.com/c
 
 ## CCSWE.Core
 
+* `ConsumerThreadPool<T>` - Provides a specialized thread pool to process items from a `BlockingCollection<T>`
 * `SynchronizedObservableCollection<T>` - A thread safe implementation of `ObservableCollection<T>`
 * `ThreadSafeQueue<T>` - A thread safe implementation of `Queue<T>`
 * Miscellaneous extension methods
