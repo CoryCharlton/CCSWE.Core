@@ -603,7 +603,10 @@ namespace CCSWE.Collections.ObjectModel
             try
             {
                 CheckIsReadOnly();
-                CheckIndex(index);
+                if (index < 0 || index > _items.Count)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
                 CheckReentrancy();
 
                 _items.Insert(index, item);
