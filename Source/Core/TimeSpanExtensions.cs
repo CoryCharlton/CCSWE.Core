@@ -17,23 +17,22 @@ namespace CCSWE
         {
             string returnValue;
 
-            if (timeSpan.TotalHours > 24)
+            if (timeSpan.TotalHours >= 24)
             {
-                returnValue = showMilliseconds ?
-                    string.Format("{0}.{1:00}:{2:00}:{3:00}.{4:000}", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds) :
-                    string.Format("{0}.{1:00}:{2:00}:{3:00}", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                returnValue = $"{timeSpan.Days}.{timeSpan.Hours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
             }
-            else if (timeSpan.TotalHours > 1)
+            else if (timeSpan.TotalHours >= 1)
             {
-                returnValue = showMilliseconds ?
-                    string.Format("{0:00}:{1:00}:{2:00}.{3:000}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds) :
-                    string.Format("{0:00}:{1:00}:{2:00}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                returnValue = $"{timeSpan.Hours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
             }
             else
             {
-                returnValue = showMilliseconds ?
-                    string.Format("{0:00}:{1:00}.{2:000}", timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds) :
-                    string.Format("{0:00}:{1:00}", timeSpan.Minutes, timeSpan.Seconds);
+                returnValue = $"{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+            }
+
+            if (showMilliseconds)
+            {
+                returnValue += $".{timeSpan.Milliseconds:000}";
             }
 
             return returnValue;

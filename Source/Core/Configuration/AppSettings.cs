@@ -17,6 +17,8 @@ namespace CCSWE.Configuration
         /// <returns>The value associated with the specified key.</returns>
         public static T GetValueAs<T>(string key)
         {
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             return ConfigurationManager.AppSettings.GetValueAs<T>(key);
         }
 
@@ -29,6 +31,8 @@ namespace CCSWE.Configuration
         /// <returns>The value associated with the specified key.</returns>
         public static T GetValueAs<T>(string key, T defaultValue)
         {
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             return ConfigurationManager.AppSettings.GetValueAs(key, defaultValue);
         }
 
@@ -41,6 +45,8 @@ namespace CCSWE.Configuration
         /// <returns>True if the key exists. False is not.</returns>
         public static bool TryGetValueAs<T>(string key, out T value)
         {
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             return ConfigurationManager.AppSettings.TryGetValueAs(key, out value);
         }
         #endregion

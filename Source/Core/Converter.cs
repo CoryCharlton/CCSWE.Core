@@ -16,7 +16,9 @@ namespace CCSWE
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (value == null)
+                {
                     return null;
+                }
 
                 type = type.GetGenericArguments()[0];
             }
@@ -24,10 +26,14 @@ namespace CCSWE
             if (type.IsEnum)
             {
                 if (value == null)
+                {
                     return null;
+                }
 
                 if (value is string)
+                {
                     return Enum.Parse(type, (string)value);
+                }
 
                 return Enum.ToObject(type, value);
             }
@@ -38,14 +44,18 @@ namespace CCSWE
         public static T ConvertValue<T>(object input)
         {
             if (input == null)
+            {
                 return default(T);
+            }
 
             var type = typeof(T);
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (input == null)
+                {
                     return default(T);
+                }
 
                 type = type.GetGenericArguments()[0];
             }
@@ -53,7 +63,9 @@ namespace CCSWE
             if (type.IsEnum)
             {
                 if (input is string)
+                {
                     return (T)Enum.Parse(typeof(T), input.ToString().Trim());
+                }
 
                 return (T)Enum.ToObject(type, input);
             }

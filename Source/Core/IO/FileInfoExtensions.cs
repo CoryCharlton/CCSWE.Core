@@ -12,6 +12,8 @@ namespace CCSWE.IO
         /// <param name="attributes">The <see cref="FileAttributes"/> to add.</param>
         public static void AddAttributes(this FileInfo fileInfo, FileAttributes attributes)
         {
+            Ensure.IsNotNull(nameof(fileInfo), fileInfo);
+
             ((FileSystemInfo) fileInfo).AddAttributes(attributes);
         }
 
@@ -22,6 +24,8 @@ namespace CCSWE.IO
         /// <param name="attributes">The <see cref="FileAttributes"/> to remove.</param>
         public static void RemoveAttributes(this FileInfo fileInfo, FileAttributes attributes)
         {
+            Ensure.IsNotNull(nameof(fileInfo), fileInfo);
+
             ((FileSystemInfo) fileInfo).RemoveAttributes(attributes);
         }
         #endregion
