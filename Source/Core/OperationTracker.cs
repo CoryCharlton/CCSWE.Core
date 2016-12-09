@@ -3,10 +3,16 @@ using System.Threading;
 
 namespace CCSWE
 {
-    //TODO: OperationTracker - Add xmldoc
+    /// <summary>
+    /// A helper class to track the number of operations executing.
+    /// </summary>
     public class OperationTracker
     {
         #region Constructor
+        /// <summary>
+        /// Create a new <see cref="OperationTracker"/>.
+        /// </summary>
+        /// <param name="setTargetPropertyAction">An <see cref="Action"/> used to set a target property when the <c>IsOperationRunning</c> property changes state.</param>
         public OperationTracker(Action<bool> setTargetPropertyAction = null)
         {
             _setTargetPropertyAction = setTargetPropertyAction;
@@ -20,8 +26,14 @@ namespace CCSWE
         #endregion
 
         #region Public Properties
+        /// <summary>
+        /// Returns <c>true</c> if an <c>OperationsRunning</c> is greater than zero.
+        /// </summary>
         public bool IsOperationRunning => Interlocked.Read(ref _operationsRunning) > 0;
 
+        /// <summary>
+        /// Returns the number of operations currently running.
+        /// </summary>
         public long OperationsRunning => Interlocked.Read(ref _operationsRunning);
         #endregion
 
@@ -33,6 +45,9 @@ namespace CCSWE
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Increment <c>OperationsRunning</c>.
+        /// </summary>
         public void BeginOperation()
         {
             lock (_lock)
@@ -42,6 +57,9 @@ namespace CCSWE
             }
         }
 
+        /// <summary>
+        /// Decrement <c>OperationsRunning</c>.
+        /// </summary>
         public void EndOperation()
         {
             lock (_lock)

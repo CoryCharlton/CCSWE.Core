@@ -60,7 +60,7 @@ namespace CCSWE.Collections.ObjectModel
         private bool _isDisposed;
         private readonly IList<T> _items = new List<T>();
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
-        [NonSerialized] private Object _syncRoot;
+        [NonSerialized] private object _syncRoot;
 
         private readonly SimpleMonitor _monitor = new SimpleMonitor();
         #endregion

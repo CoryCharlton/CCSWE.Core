@@ -2,6 +2,9 @@
 
 namespace CCSWE
 {
+    /// <summary>
+    /// A helper class for ensuring parameter conditions.
+    /// </summary>
     public static class Ensure
     {
         private static Exception GetException<TException>(string name, string message) where TException : Exception, new()
