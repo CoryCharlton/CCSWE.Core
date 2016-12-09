@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/jdqirp46kppcw2jq?svg=true)](https://ci.appveyor.com/project/CoryCharlton/ccswe-libraries)
+
 # CCSWE Libraries
 
 Just a bunch of C# .NET classes and extension methods I find useful.
