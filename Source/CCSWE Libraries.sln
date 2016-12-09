@@ -13,13 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.WPF", "WPF\CCSWE.WPF.
 		{F81042C2-E267-4768-98D0-E99B9BA617EB} = {F81042C2-E267-4768-98D0-E99B9BA617EB}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2B6B3AB3-A400-4C4D-9A80-F7CBCF356555}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSWE.Native", "Native\CCSWE.Native.csproj", "{915EFB38-96B7-4E9D-A094-23E6F4153825}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F81042C2-E267-4768-98D0-E99B9BA617EB} = {F81042C2-E267-4768-98D0-E99B9BA617EB}
