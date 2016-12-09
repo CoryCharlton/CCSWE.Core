@@ -6,10 +6,8 @@ using System.Threading;
 
 namespace CCSWE.Collections.Generic
 {
-    /// <summary>
-    /// A thread safe <see cref="Queue{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of objects contained in the <see cref="ThreadSafeQueue{T}"/></typeparam>
+    /// <summary>Represents a first-in, first-out collection of objects that is thread safe.</summary>
+    /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
     public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection
     {
         #region Constructor
