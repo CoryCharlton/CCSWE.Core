@@ -6,8 +6,6 @@ using System.Threading;
 
 namespace CCSWE.Collections.Generic
 {
-    //TODO: ThreadSafeQueue<T> - Add xmldoc
-    //TODO: ThreadSafeQueue<T> - Change to ReaderWriterLockSlim?
     /// <summary>
     /// A thread safe <see cref="Queue{T}"/>.
     /// </summary>
