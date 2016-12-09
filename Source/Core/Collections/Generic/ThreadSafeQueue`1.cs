@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace CCSWE.Collections.Generic
@@ -15,13 +16,18 @@ namespace CCSWE.Collections.Generic
             _queue = new Queue<T>();
         }
 
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public ThreadSafeQueue(IEnumerable<T> collection)
         {
+            Ensure.IsNotNull(nameof(collection), collection);
+
             _queue = new Queue<T>(collection);
         }
 
         public ThreadSafeQueue(int capacity)
         {
+            Ensure.IsInRange(nameof(capacity), capacity >= 0);
+
             _queue = new Queue<T>(capacity);
         }
         #endregion
@@ -83,6 +89,10 @@ namespace CCSWE.Collections.Generic
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            Ensure.IsNotNull(nameof(array), array);
+            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
+            Ensure.IsValid<ArgumentException>(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+
             lock (_lock)
             {
                 _queue.CopyTo(array, arrayIndex);                
@@ -138,8 +148,11 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        public void EnqueRange(IEnumerable<T> items)
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public void EnqueueRange(IEnumerable<T> items)
         {
+            Ensure.IsNotNull(nameof(items), items);
+
             lock (_lock)
             {
                 foreach (var item in items)
@@ -183,7 +196,7 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        public bool TryDeque(out T item)
+        public bool TryDequeue(out T item)
         {
             item = default(T);
 

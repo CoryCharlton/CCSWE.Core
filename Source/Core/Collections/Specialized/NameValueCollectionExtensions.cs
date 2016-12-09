@@ -16,7 +16,11 @@ namespace CCSWE.Collections.Specialized
         /// <returns>The value associated with the specified key.</returns>
         public static T GetValueAs<T>(this NameValueCollection collection, string key)
         {
+            Ensure.IsNotNull(nameof(collection), collection);
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             var stringValue = collection[key];
+
             return Converter.ConvertValue<T>(stringValue);
         }
 
@@ -30,6 +34,9 @@ namespace CCSWE.Collections.Specialized
         /// <returns>The value associated with the specified key.</returns>
         public static T GetValueAs<T>(this NameValueCollection collection, string key, T defaultValue)
         {
+            Ensure.IsNotNull(nameof(collection), collection);
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             var stringValue = collection[key];
 
             return string.IsNullOrWhiteSpace(stringValue) ? defaultValue : Converter.SafeConvert(stringValue, defaultValue);
@@ -45,6 +52,9 @@ namespace CCSWE.Collections.Specialized
         /// <returns>True if the key exists. False is not.</returns>
         public static bool TryGetValueAs<T>(this NameValueCollection collection, string key, out T value)
         {
+            Ensure.IsNotNull(nameof(collection), collection);
+            Ensure.IsNotNullOrWhitespace(nameof(key), key);
+
             var stringValue = collection[key];
 
             if (string.IsNullOrWhiteSpace(stringValue))

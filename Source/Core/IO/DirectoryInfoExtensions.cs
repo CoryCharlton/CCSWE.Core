@@ -12,6 +12,8 @@ namespace CCSWE.IO
         /// <param name="attributes">The <see cref="FileAttributes"/> to add.</param>
         public static void AddAttributes(this DirectoryInfo directoryInfo, FileAttributes attributes)
         {
+            Ensure.IsNotNull(nameof(directoryInfo), directoryInfo);
+
             directoryInfo.AddAttributes(attributes, false);
         }
 
@@ -23,6 +25,8 @@ namespace CCSWE.IO
         /// <param name="recursive"><c>true</c> to add attributes from this directory, its subdirectories, and all files; otherwise, <c>false</c>.</param>
         public static void AddAttributes(this DirectoryInfo directoryInfo, FileAttributes attributes, bool recursive)
         {
+            Ensure.IsNotNull(nameof(directoryInfo), directoryInfo);
+
             ((FileSystemInfo)directoryInfo).AddAttributes(attributes, recursive);
         }
 
@@ -33,6 +37,8 @@ namespace CCSWE.IO
         /// <param name="attributes">The <see cref="FileAttributes"/> to remove.</param>
         public static void RemoveAttributes(this DirectoryInfo directoryInfo, FileAttributes attributes)
         {
+            Ensure.IsNotNull(nameof(directoryInfo), directoryInfo);
+
             directoryInfo.RemoveAttributes(attributes, false);
         }
 
@@ -44,6 +50,8 @@ namespace CCSWE.IO
         /// <param name="recursive"><c>true</c> to remove attributes from this directory, its subdirectories, and all files; otherwise, <c>false</c>.</param>
         public static void RemoveAttributes(this DirectoryInfo directoryInfo, FileAttributes attributes, bool recursive)
         {
+            Ensure.IsNotNull(nameof(directoryInfo), directoryInfo);
+
             ((FileSystemInfo)directoryInfo).RemoveAttributes(attributes, recursive);
         }
         #endregion

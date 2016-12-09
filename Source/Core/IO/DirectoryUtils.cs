@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 
@@ -15,7 +14,7 @@ namespace CCSWE.IO
         /// <returns><c>true</c> if the directory contains no files or subdirectories</returns>
         public static bool IsEmpty(DirectoryInfo directory)
         {
-            Contract.Requires<ArgumentNullException>(directory != null);
+            Ensure.IsNotNull(nameof(directory), directory);
 
             return !(directory.EnumerateDirectories().Any() || directory.EnumerateFiles().Any());
         }
@@ -27,7 +26,7 @@ namespace CCSWE.IO
         /// <returns><c>true</c> if the directory contains no files or subdirectories</returns>
         public static bool IsEmpty(string path)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(path));
+            Ensure.IsNotNullOrWhitespace(nameof(path), path);
 
             return IsEmpty(new DirectoryInfo(path));
         }
@@ -37,22 +36,27 @@ namespace CCSWE.IO
         /// </summary>
         /// <param name="directory">A <see cref="DirectoryInfo"/> representing the directory to be deleted.</param>
         /// <param name="recursive"><c>true</c> to delete this directory, its subdirectories, and all files; otherwise, <c>false</c>.</param>
-        public static void SafeDelete(DirectoryInfo directory, bool recursive = false)
+        /// <returns><c>true</c> if the directory was deleted</returns>
+        public static bool SafeDelete(DirectoryInfo directory, bool recursive = false)
         {
             if (directory == null)
             {
-                return;
+                return false;
             }
 
             try
             {
-                DirectoryInfoExtensions.RemoveAttributes(directory, FileAttributes.ReadOnly, recursive);
+                directory.RemoveAttributes(FileAttributes.ReadOnly, recursive);
                 directory.Delete(recursive);
+
+                return true;
             }
             catch (Exception)
             {
                 // Move along nothing to see here
             }
+
+            return false;
         }
 
         /// <summary>
@@ -60,21 +64,24 @@ namespace CCSWE.IO
         /// </summary>
         /// <param name="path">The name of the directory to be deleted..</param>
         /// <param name="recursive"><c>true</c> to delete this directory, its subdirectories, and all files; otherwise, <c>false</c>.</param>
-        public static void SafeDelete(string path, bool recursive = false)
+        /// <returns><c>true</c> if the directory was deleted</returns>
+        public static bool SafeDelete(string path, bool recursive = false)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return;
+                return false;
             }
 
             try
             {
-                SafeDelete(new DirectoryInfo(path), recursive);
+                return SafeDelete(new DirectoryInfo(path), recursive);
             }
             catch (Exception)
             {
                 // Move along nothing to see here
             }
+
+            return false;
         }
         #endregion
     }
