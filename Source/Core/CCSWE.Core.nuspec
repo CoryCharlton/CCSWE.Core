@@ -6,12 +6,12 @@
     <title>$title$</title>
     <authors>Cory Charlton</authors>
     <owners>Cory Charlton</owners>
-    <licenseUrl>https://github.com/CoryCharlton/CCSWE-Libraries/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>https://github.com/CoryCharlton/CCSWE-Libraries</projectUrl>
+    <licenseUrl>https://github.com/CoryCharlton/CCSWE.Core/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/CoryCharlton/CCSWE.Core</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Just a bunch of C# .NET classes and extension methods I find useful</description>
     <releaseNotes>Minor bug fixes</releaseNotes>
-    <copyright>Copyright 2015</copyright>
+    <copyright>Copyright 2016</copyright>
     <tags>Utilities Threading Collections AppSettings Extensions ThreadPool ObservableCollection</tags>
   </metadata>
 </package>
