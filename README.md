@@ -14,12 +14,7 @@ If you find this code useful please consider [donating](https://www.paypal.com/c
 * `OperationTracker` - A helper class to track the number of operations executing.
 * `SynchronizedObservableCollection<T>` - A thread safe implementation of `ObservableCollection<T>`.
 * `ThreadSafeQueue<T>` - A thread safe implementation of `Queue<T>`.
-* Miscellaneous extension methods:
-
-** `DateTime`
-** `DirectoryInfo`
-** `FileInfo`
-** `TimeSpan`
+* Miscellaneous extension methods (`DateTime`, `DirectoryInfo`, `FileInfo`, `TimeSpan`)
 
 
 # CCSWE.Native

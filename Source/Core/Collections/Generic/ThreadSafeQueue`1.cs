@@ -188,11 +188,7 @@ namespace CCSWE.Collections.Generic
         /// <exception cref="T:System.InvalidOperationException">The <see cref="ThreadSafeQueue{T}" /> is empty.</exception>
         public T Dequeue()
         {
-            if (Count <= 0)
-            {
-                // TODO: Can I put this into the Ensure class?
-                throw new InvalidOperationException();
-            }
+            Ensure.IsValid<InvalidOperationException>(nameof(Count), Count > 0, $"'{nameof(Count)}' is less than or equal to zero.");
 
             _itemsLocker.EnterWriteLock();
 
@@ -210,7 +206,6 @@ namespace CCSWE.Collections.Generic
         /// <param name="item">The object to add to the <see cref="ThreadSafeQueue{T}" />. The value can be null for reference types.</param>
         public void Enqueue(T item)
         {
-
             _itemsLocker.EnterWriteLock();
 
             try
@@ -244,19 +239,30 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        // TODO: ThreadSafeQueue<T> - Return a copy?
-        // TODO: Add XmlDoc
+        /// <summary>Returns an enumerator that iterates through the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>An <see cref="T:System.Collections.Generic.Queue`1.Enumerator" /> for the <see cref="ThreadSafeQueue{T}" />.</returns>
         public Queue<T>.Enumerator GetEnumerator()
         {
-            return _queue.GetEnumerator();
+            _itemsLocker.EnterReadLock();
+
+            try
+            {
+                return new Queue<T>(_queue).GetEnumerator();
+            }
+            finally
+            {
+                _itemsLocker.ExitReadLock();   
+            }
         }
 
         // ReSharper disable RedundantCast
+        [ExcludeFromCodeCoverage]
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return (IEnumerator<T>) GetEnumerator();
         }
 
+        [ExcludeFromCodeCoverage]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator) GetEnumerator();
@@ -268,11 +274,7 @@ namespace CCSWE.Collections.Generic
         /// <exception cref="T:System.InvalidOperationException">The <see cref="ThreadSafeQueue{T}" /> is empty.</exception>
         public T Peek()
         {
-            if (Count <= 0)
-            {
-                // TODO: Can I put this into the Ensure class?
-                throw new InvalidOperationException();
-            }
+            Ensure.IsValid<InvalidOperationException>(nameof(Count), Count > 0, $"'{nameof(Count)}' is less than or equal to zero.");
 
             _itemsLocker.EnterReadLock();
 

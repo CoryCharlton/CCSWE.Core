@@ -144,6 +144,14 @@ namespace CCSWE.Core.UnitTests.Collections.Generic
                 Assert.That(queue.Count, Is.EqualTo(2));
                 Assert.That(item, Is.EqualTo("1"));
             }
+
+            [Test]
+            public void It_throws_exception_when_queue_is_empty()
+            {
+                var queue = new ThreadSafeQueue<string>();
+
+                Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
+            }
         }
 
         [TestFixture]
@@ -181,6 +189,27 @@ namespace CCSWE.Core.UnitTests.Collections.Generic
         }
 
         [TestFixture]
+        public class When_GetEnumerator_is_called
+        {
+            [Test]
+            public void It_should_not_throw_exception_if_queue_is_modified()
+            {
+                var count = 0;
+                var queue = new ThreadSafeQueue<string>(new List<string> {"1", "2", "3"});
+
+                // ReSharper disable once UnusedVariable
+                foreach (var item in queue)
+                {
+                    queue.Enqueue($"{count + 4}");
+                    count++;
+                }
+
+                Assert.That(count, Is.EqualTo(3));
+                Assert.That(queue.Count, Is.EqualTo(6));
+            }
+        }
+
+        [TestFixture]
         public class When_Peek_is_called
         {
             [Test]
@@ -191,6 +220,14 @@ namespace CCSWE.Core.UnitTests.Collections.Generic
 
                 Assert.That(queue.Count, Is.EqualTo(3));
                 Assert.That(item, Is.EqualTo("1"));
+            }
+
+            [Test]
+            public void It_throws_exception_when_queue_is_empty()
+            {
+                var queue = new ThreadSafeQueue<string>();
+
+                Assert.Throws<InvalidOperationException>(() => queue.Peek());
             }
         }
 
