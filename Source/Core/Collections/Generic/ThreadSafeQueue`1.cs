@@ -6,16 +6,25 @@ using System.Threading;
 
 namespace CCSWE.Collections.Generic
 {
-    //TODO: ThreadSafeQueue<T> - Add xmldoc
-    //TODO: ThreadSafeQueue<T> - Change to ReaderWriterLockSlim?
+    /// <summary>Represents a first-in, first-out collection of objects that is thread safe.</summary>
+    /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
     public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection
     {
         #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ThreadSafeQueue{T}"/> class that is empty and has a default initial capacity.
+        /// </summary>
         public ThreadSafeQueue()
         {
             _queue = new Queue<T>();
         }
 
+        /// <summary>
+        /// Initialized a new instance of the <see cref="ThreadSafeQueue{T}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new <see cref="T:System.Collections.Generic.Queue`1" />.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="collection" /> is null.</exception>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public ThreadSafeQueue(IEnumerable<T> collection)
         {
@@ -24,6 +33,10 @@ namespace CCSWE.Collections.Generic
             _queue = new Queue<T>(collection);
         }
 
+        /// <summary>Initializes a new instance of the <see cref="ThreadSafeQueue{T}" /> class that is empty and has the specified initial capacity.</summary>
+        /// <param name="capacity">The initial number of elements that the <see cref="ThreadSafeQueue{T}" /> can contain.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="capacity" /> is less than zero.</exception>
         public ThreadSafeQueue(int capacity)
         {
             Ensure.IsInRange(nameof(capacity), capacity >= 0);
@@ -33,28 +46,33 @@ namespace CCSWE.Collections.Generic
         #endregion
 
         #region Private Fields
-        private readonly object _lock = new object();
+        private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
         private readonly Queue<T> _queue;
-        [NonSerialized]
-        private object _syncRoot;
+        [NonSerialized] private object _syncRoot;
         #endregion
 
         #region Public Properties
+        /// <summary>
+        /// Gets the number of items contained in the <see cref="ThreadSafeQueue{T}"/>
+        /// </summary>
         public int Count
         {
             get
             {
-                lock (_lock)
+                _itemsLocker.EnterReadLock();
+
+                try
                 {
                     return _queue.Count;
+                }
+                finally
+                {
+                    _itemsLocker.ExitReadLock();
                 }
             }
         }
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot
         {
@@ -71,32 +89,65 @@ namespace CCSWE.Collections.Generic
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Removes all objects from the <see cref="ThreadSafeQueue{T}" />.
+        /// </summary>
         public void Clear()
         {
-            lock (_lock)
+            _itemsLocker.EnterWriteLock();
+
+            try
             {
                 _queue.Clear();
             }
-        }
-
-        public bool Contains(T item)
-        {
-            lock (_lock)
+            finally
             {
-                return _queue.Contains(item);
+                _itemsLocker.ExitWriteLock();
             }
         }
 
+        /// <summary>Determines whether an element is in the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="ThreadSafeQueue{T}" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="ThreadSafeQueue{T}" />. The value can be null for reference types.</param>
+        public bool Contains(T item)
+        {
+            _itemsLocker.EnterReadLock();
+
+            try
+            {
+                return _queue.Contains(item);
+            }
+            finally
+            {
+                _itemsLocker.ExitReadLock();
+            }
+        }
+
+        /// <summary>Copies the <see cref="ThreadSafeQueue{T}" /> elements to an existing one-dimensional <see cref="T:System.Array" />, starting at the specified array index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="ThreadSafeQueue{T}" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="array" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="arrayIndex" /> is less than zero.</exception>
+        /// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="ThreadSafeQueue{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             Ensure.IsNotNull(nameof(array), array);
             Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
             Ensure.IsValid<ArgumentException>(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
 
-            lock (_lock)
+            _itemsLocker.EnterReadLock();
+
+            try
             {
-                _queue.CopyTo(array, arrayIndex);                
+                _queue.CopyTo(array, arrayIndex);
             }
+            finally
+            {
+                _itemsLocker.ExitReadLock();
+            }
+
         }
 
         //TODO: ThreadSafeQueue<T> ICollection.CopyTo(Array array, int index) - Implement
@@ -132,80 +183,143 @@ namespace CCSWE.Collections.Generic
             //}
         }
 
+        /// <summary>Removes and returns the object at the beginning of the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>The object that is removed from the beginning of the <see cref="ThreadSafeQueue{T}" />.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="ThreadSafeQueue{T}" /> is empty.</exception>
         public T Dequeue()
         {
-            lock (_lock)
+            Ensure.IsValid<InvalidOperationException>(nameof(Count), Count > 0, $"'{nameof(Count)}' is less than or equal to zero.");
+
+            _itemsLocker.EnterWriteLock();
+
+            try
             {
                 return _queue.Dequeue();
             }
-        }
-
-        public void Enqueue(T item)
-        {
-            lock (_lock)
+            finally
             {
-                _queue.Enqueue(item);
+                _itemsLocker.ExitWriteLock();
             }
         }
 
+        /// <summary>Adds an object to the end of the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <param name="item">The object to add to the <see cref="ThreadSafeQueue{T}" />. The value can be null for reference types.</param>
+        public void Enqueue(T item)
+        {
+            _itemsLocker.EnterWriteLock();
+
+            try
+            {
+                _queue.Enqueue(item);
+            }
+            finally
+            {
+                _itemsLocker.ExitWriteLock();
+            }
+        }
+
+        // TODO: Add XmlDoc
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public void EnqueueRange(IEnumerable<T> items)
         {
             Ensure.IsNotNull(nameof(items), items);
 
-            lock (_lock)
+            _itemsLocker.EnterWriteLock();
+
+            try
             {
                 foreach (var item in items)
                 {
                     _queue.Enqueue(item);
                 }
             }
+            finally
+            {
+                _itemsLocker.ExitWriteLock();
+            }
         }
 
-        //TODO: ThreadSafeQueue<T> - Return a copy?
+        /// <summary>Returns an enumerator that iterates through the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>An <see cref="T:System.Collections.Generic.Queue`1.Enumerator" /> for the <see cref="ThreadSafeQueue{T}" />.</returns>
         public Queue<T>.Enumerator GetEnumerator()
         {
-            return _queue.GetEnumerator();
+            _itemsLocker.EnterReadLock();
+
+            try
+            {
+                return new Queue<T>(_queue).GetEnumerator();
+            }
+            finally
+            {
+                _itemsLocker.ExitReadLock();   
+            }
         }
 
         // ReSharper disable RedundantCast
+        [ExcludeFromCodeCoverage]
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return (IEnumerator<T>) GetEnumerator();
         }
 
+        [ExcludeFromCodeCoverage]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator) GetEnumerator();
         }
         // ReSharper restore RedundantCast
 
+        /// <summary>Returns the object at the beginning of the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>The object at the beginning of the <see cref="ThreadSafeQueue{T}" />.</returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="ThreadSafeQueue{T}" /> is empty.</exception>
         public T Peek()
         {
-            lock (_lock)
+            Ensure.IsValid<InvalidOperationException>(nameof(Count), Count > 0, $"'{nameof(Count)}' is less than or equal to zero.");
+
+            _itemsLocker.EnterReadLock();
+
+            try
             {
                 return _queue.Peek();
             }
-        }
-
-        public void TrimExcess()
-        {
-            lock (_lock)
+            finally
             {
-                _queue.TrimExcess();
+                _itemsLocker.ExitReadLock();
             }
         }
 
+        /// <summary>
+        /// Sets the capacity to the actual number of elements in the <see cref="ThreadSafeQueue{T}" />, if that number is less than 90 percent of current capacity.
+        /// </summary>
+        public void TrimExcess()
+        {
+            _itemsLocker.EnterWriteLock();
+
+            try
+            {
+                _queue.TrimExcess();
+            }
+            finally
+            {
+                _itemsLocker.ExitWriteLock();
+            }
+        }
+
+        // TODO: Add XmlDoc
         public bool TryDequeue(out T item)
         {
             item = default(T);
 
-            lock (_lock)
+            _itemsLocker.EnterUpgradeableReadLock();
+
+            try
             {
-                if (_queue.Count <= 0)
+                if (Count <= 0)
                 {
                     return false;
                 }
+
+                _itemsLocker.EnterWriteLock();
 
                 try
                 {
@@ -215,7 +329,11 @@ namespace CCSWE.Collections.Generic
                 catch (Exception)
                 {
                     return false;
-                }                
+                }
+            }
+            finally
+            {
+                _itemsLocker.ExitUpgradeableReadLock();
             }
         }
         #endregion

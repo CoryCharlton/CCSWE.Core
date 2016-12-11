@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/gynqs96pxgjkxskl/branch/master?svg=true)](https://ci.appveyor.com/project/CoryCharlton/ccswe-core/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/gynqs96pxgjkxskl?svg=true)](https://ci.appveyor.com/project/CoryCharlton/ccswe-core)
 
 # CCSWE.Core
 
@@ -8,10 +8,14 @@ If you find this code useful please consider [donating](https://www.paypal.com/c
 
 ## Features
 
-* `ConsumerThreadPool<T>` - Provides a specialized thread pool to process items from a `BlockingCollection<T>`
-* `SynchronizedObservableCollection<T>` - A thread safe implementation of `ObservableCollection<T>`
-* `ThreadSafeQueue<T>` - A thread safe implementation of `Queue<T>`
-* Miscellaneous extension methods
+* `AppSettings` - Helper class for retrieving values from `ConfigurationManager.AppSettings `.
+* `ConsumerThreadPool<T>` - Provides a specialized thread pool to process items from a `BlockingCollection<T>`.
+* `Ensure` - A helper class for parameter validation.
+* `OperationTracker` - A helper class to track the number of operations executing.
+* `SynchronizedObservableCollection<T>` - A thread safe implementation of `ObservableCollection<T>`.
+* `ThreadSafeQueue<T>` - A thread safe implementation of `Queue<T>`.
+* Miscellaneous extension methods (`DateTime`, `DirectoryInfo`, `FileInfo`, `TimeSpan`)
+
 
 # CCSWE.Native
 

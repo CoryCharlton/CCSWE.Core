@@ -3,6 +3,9 @@ using System.IO;
 
 namespace CCSWE.IO
 {
+    /// <summary>
+    /// Extension methods for <see cref="FileSystemInfo"/>;
+    /// </summary>
     internal static class FileSystemInfoExtensions
     {
         #region Private Methods

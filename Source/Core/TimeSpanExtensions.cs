@@ -12,7 +12,7 @@ namespace CCSWE
         /// </summary>
         /// <param name="timeSpan">The <see cref="TimeSpan"/> to convert.</param>
         /// <param name="showMilliseconds">Whether or not to display milliseconds.</param>
-        /// <returns>A formatted string.</returns>
+        /// <returns>A formatted <see cref="TimeSpan"/> string.</returns>
         public static string ToFriendlyString(this TimeSpan timeSpan, bool showMilliseconds = false)
         {
             string returnValue;
