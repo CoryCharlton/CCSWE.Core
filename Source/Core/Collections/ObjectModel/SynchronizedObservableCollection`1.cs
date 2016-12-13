@@ -209,8 +209,7 @@ namespace CCSWE.Collections.ObjectModel
                     _itemsLocker.ExitWriteLock();
                 }
 
-                OnPropertyChanged("Item[]");
-                OnCollectionChanged(NotifyCollectionChangedAction.Replace, oldValue, value, index);
+                OnNotifyItemReplaced(value, oldValue, index);
             }
         }
         #endregion
@@ -252,54 +251,67 @@ namespace CCSWE.Collections.ObjectModel
             return ((value is T) || (value == null && default(T) == null));
         }
 
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
+        private void OnNotifyCollectionReset()
         {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index, int oldIndex)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index, oldIndex));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object oldItem, object newItem, int index)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            var collectionChanged = CollectionChanged;
-            if (collectionChanged == null)
-            {
-                return;
-            }
-
             using (BlockReentrancy())
             {
-                _context.Send(state => collectionChanged(this, e), null);
+                _context.Send(state =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                }, null);
             }
         }
 
-        private void OnCollectionReset()
+        private void OnNotifyItemAdded(T item, int index)
         {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            var propertyChanged = PropertyChanged;
-            if (propertyChanged == null)
+            using (BlockReentrancy())
             {
-                return;
+                _context.Send(state =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+                }, null);
             }
+        }
 
-            _context.Send(state => propertyChanged(this, e), null);
+        private void OnNotifyItemMoved(T item, int newIndex, int oldIndex)
+        {
+            using (BlockReentrancy())
+            {
+                _context.Send(state =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex));
+                }, null);
+            }
+        }
+
+        private void OnNotifyItemRemoved(T item, int index)
+        {
+            using (BlockReentrancy())
+            {
+                _context.Send(state =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+                }, null);
+            }
+        }
+
+        private void OnNotifyItemReplaced(T newItem, T oldItem, int index)
+        {
+            using (BlockReentrancy())
+            {
+                _context.Send(state =>
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, index));
+                }, null);
+            }
         }
         #endregion
 
@@ -342,9 +354,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
+            OnNotifyItemAdded(item, index);
         }
 
         int IList.Add(object value)
@@ -372,9 +382,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
+            OnNotifyItemAdded(item, index);
 
             return index;
         }
@@ -395,9 +403,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionReset();
+            OnNotifyCollectionReset();
         }
 
         /// <summary>Copies the <see cref="SynchronizedObservableCollection{T}" /> elements to an existing one-dimensional <see cref="System.Array" />, starting at the specified array index.</summary>
@@ -616,9 +622,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
+            OnNotifyItemAdded(item, index);
         }
 
         void IList.Insert(int index, object value)
@@ -638,7 +642,7 @@ namespace CCSWE.Collections.ObjectModel
         /// <param name="newIndex">The zero-based index specifying the new location of the item.</param>
         public void Move(int oldIndex, int newIndex)
         {
-            T value;
+            T item;
 
             _itemsLocker.EnterWriteLock();
 
@@ -648,18 +652,17 @@ namespace CCSWE.Collections.ObjectModel
                 CheckIndex(oldIndex);
                 CheckIndex(newIndex);
 
-                value = _items[oldIndex];
+                item = _items[oldIndex];
 
                 _items.RemoveAt(oldIndex);
-                _items.Insert(newIndex, value);
+                _items.Insert(newIndex, item);
             }
             finally
             {
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Move, value, newIndex, oldIndex);
+            OnNotifyItemMoved(item, newIndex, oldIndex);
         }
 
         /// <summary>Removes the first occurrence of a specific object from the <see cref="SynchronizedObservableCollection{T}" />.</summary>
@@ -692,9 +695,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Remove, value, index);
+            OnNotifyItemRemoved(value, index);
 
             return true;
         }
@@ -731,9 +732,7 @@ namespace CCSWE.Collections.ObjectModel
                 _itemsLocker.ExitWriteLock();
             }
 
-            OnPropertyChanged("Count");
-            OnPropertyChanged("Item[]");
-            OnCollectionChanged(NotifyCollectionChangedAction.Remove, value, index);
+            OnNotifyItemRemoved(value, index);
         }
         #endregion
 
