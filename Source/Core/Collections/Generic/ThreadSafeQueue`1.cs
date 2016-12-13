@@ -8,7 +8,7 @@ namespace CCSWE.Collections.Generic
 {
     /// <summary>Represents a first-in, first-out collection of objects that is thread safe.</summary>
     /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
-    public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection
+    public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection, IDisposable
     {
         #region Constructor
         /// <summary>
@@ -46,6 +46,7 @@ namespace CCSWE.Collections.Generic
         #endregion
 
         #region Private Fields
+        private bool _isDisposed;
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
         private readonly Queue<T> _queue;
         [NonSerialized] private object _syncRoot;
@@ -85,6 +86,23 @@ namespace CCSWE.Collections.Generic
 
                 return _syncRoot;
             }
+        }
+        #endregion
+
+        #region Protected Methods
+        /// <summary>
+        /// Releases all resources used by the <see cref="ThreadSafeQueue{T}"/>.
+        /// </summary>
+        /// <param name="disposing">Not used.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _itemsLocker.Dispose();
+            _isDisposed = true;
         }
         #endregion
 
@@ -178,6 +196,15 @@ namespace CCSWE.Collections.Generic
             {
                 _itemsLocker.ExitWriteLock();
             }
+        }
+
+        /// <summary>
+        /// Releases all resources used by the <see cref="ThreadSafeQueue{T}"/>.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>Adds an object to the end of the <see cref="ThreadSafeQueue{T}" />.</summary>

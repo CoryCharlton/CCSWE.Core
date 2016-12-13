@@ -4,49 +4,53 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace CCSWE.Collections.ObjectModel
 {
-    //TODO: SynchronizedObservableCollection<T> - Add xmldoc
-    //TODO: SynchronizedObservableCollection<T> - ObservableCollection<T>.Move() is not implemented...
+    /// <summary>Represents a thread-safe dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed.</summary>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
     [Serializable]
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
     public class SynchronizedObservableCollection<T> : IDisposable, IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         #region Constructor
-        public SynchronizedObservableCollection()
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedObservableCollection{T}" /> class.</summary>
+        public SynchronizedObservableCollection(): this(new List<T>(), GetCurrentSynchronizationContext())
         {
-            _context = SynchronizationContext.Current;
         }
 
-        public SynchronizedObservableCollection(IEnumerable<T> collection): this()
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedObservableCollection{T}" /> class that contains elements copied from the specified collection.</summary>
+        /// <param name="collection">The collection from which the elements are copied.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="collection" /> parameter cannot be null.</exception>
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public SynchronizedObservableCollection(IEnumerable<T> collection): this(collection, GetCurrentSynchronizationContext())
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException(nameof(collection), "'collection' cannot be null");
-            }
-
-            foreach (var item in collection)
-            {
-                _items.Add(item);
-            }
         }
-        
-        public SynchronizedObservableCollection(SynchronizationContext context)
+
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedObservableCollection{T}" /> class with the specified context.</summary>
+        /// <param name="context">The context used for event invokation.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="context" /> parameter cannot be null.</exception>
+        public SynchronizedObservableCollection(SynchronizationContext context): this(new List<T>(), context)
         {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="SynchronizedObservableCollection{T}" /> class that contains elements copied from the specified collection with the specified context.</summary>
+        /// <param name="collection">The collection from which the elements are copied.</param>
+        /// <param name="context">The context used for event invokation.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="collection" /> parameter cannot be null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="context" /> parameter cannot be null.</exception>
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public SynchronizedObservableCollection(IEnumerable<T> collection, SynchronizationContext context)
+        {
+            Ensure.IsNotNull(nameof(collection), collection);
+            Ensure.IsNotNull(nameof(context), context);
+
             _context = context;
-        }
-
-        public SynchronizedObservableCollection(IEnumerable<T> collection, SynchronizationContext context): this(context)
-        {
-            if (collection == null)
-            {
-                throw new ArgumentNullException(nameof(collection), "'collection' cannot be null");
-            }
 
             foreach (var item in collection)
             {
@@ -72,58 +76,41 @@ namespace CCSWE.Collections.ObjectModel
             remove { PropertyChanged -= value; }
         }
 
+        /// <summary>Occurs when an item is added, removed, changed, moved, or the entire list is refreshed.</summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>Occurs when a property value changes.</summary>
         protected event PropertyChangedEventHandler PropertyChanged;
         #endregion
 
         #region Private Properties
-        bool IList.IsFixedSize
-        {
-            get
-            {
-                var list = _items as IList;
-                if (list != null)
-                {
-                    return list.IsFixedSize;
-                }
+        bool IList.IsFixedSize => (_items as IList)?.IsFixedSize ?? _items.IsReadOnly;
 
-                return _items.IsReadOnly;
-            }
-        }
+        bool ICollection<T>.IsReadOnly => _items.IsReadOnly;
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return _items.IsReadOnly; }
-        }
+        bool IList.IsReadOnly => _items.IsReadOnly;
 
-        bool IList.IsReadOnly
-        {
-            get { return _items.IsReadOnly; }
-        }
-
-        bool ICollection.IsSynchronized
-        {
-            get { return true; }
-        }
+        bool ICollection.IsSynchronized => true;
 
         object ICollection.SyncRoot
         {
             get
             {
+                // ReSharper disable once InvertIf
                 if (_syncRoot == null)
                 {
                     _itemsLocker.EnterReadLock();
 
                     try
                     {
-                        var c = _items as ICollection;
-                        if (c != null)
+                        var collection = _items as ICollection;
+                        if (collection != null)
                         {
-                            _syncRoot = c.SyncRoot;
+                            _syncRoot = collection.SyncRoot;
                         }
                         else
                         {
-                            Interlocked.CompareExchange<Object>(ref _syncRoot, new Object(), null);
+                            Interlocked.CompareExchange<object>(ref _syncRoot, new object(), null);
                         }
                     }
                     finally
@@ -135,9 +122,27 @@ namespace CCSWE.Collections.ObjectModel
                 return _syncRoot;
             }
         }
+
+        object IList.this[int index]
+        {
+            get { return this[index]; }
+            set
+            {
+                try
+                {
+                    this[index] = (T)value;
+                }
+                catch (InvalidCastException)
+                {
+                    throw new ArgumentException("'value' is the wrong type");
+                }
+            }
+        }
         #endregion
 
         #region Public Properties
+        /// <summary>Gets the number of elements actually contained in the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>The number of elements actually contained in the <see cref="SynchronizedObservableCollection{T}" />.</returns>
         public int Count
         {
             get
@@ -155,6 +160,11 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
+        /// <summary>Gets or sets the element at the specified index.</summary>
+        /// <returns>The element at the specified index.</returns>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is less than zero.-or-<paramref name="index" /> is equal to or greater than <see cref="SynchronizedObservableCollection{T}.Count" />. </exception>
         public T this[int index]
         {
             get
@@ -198,23 +208,6 @@ namespace CCSWE.Collections.ObjectModel
                 OnCollectionChanged(NotifyCollectionChangedAction.Replace, oldValue, value, index);
             }
         }
-
-        object IList.this[int index]
-        {
-            get { return this[index]; }
-            set
-            {
-                try
-                {
-                    this[index] = (T) value;
-                }
-                catch (InvalidCastException)
-                {
-                    throw new ArgumentException("'value' is the wrong type");
-                }
-            }
-        }
-
         #endregion
 
         #region Private Methods
@@ -238,9 +231,10 @@ namespace CCSWE.Collections.ObjectModel
         {
             if (_items.IsReadOnly)
             {
-                throw new NotSupportedException("Collection is readonly");
+                throw new NotSupportedException("SynchronizedObservableCollection is readonly");
             }
         }
+
 
         private void CheckReentrancy()
         {
@@ -248,6 +242,11 @@ namespace CCSWE.Collections.ObjectModel
             {
                 throw new InvalidOperationException("SynchronizedObservableCollection reentrancy not allowed");
             }
+        }
+
+        private static SynchronizationContext GetCurrentSynchronizationContext()
+        {
+            return SynchronizationContext.Current ?? new SynchronizationContext();
         }
 
         private static bool IsCompatibleObject(object value)
@@ -309,6 +308,10 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Protected Methods
+        /// <summary>
+        /// Releases all resources used by the <see cref="SynchronizedObservableCollection{T}"/>.
+        /// </summary>
+        /// <param name="disposing">Not used.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)
@@ -322,11 +325,13 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Public Methods
+        /// <summary>Adds an object to the end of the <see cref="SynchronizedObservableCollection{T}" />. </summary>
+        /// <param name="item">The object to be added to the end of the <see cref="SynchronizedObservableCollection{T}" />. The value can be null for reference types.</param>
         public void Add(T item)
         {
             _itemsLocker.EnterWriteLock();
 
-            var index = -1;
+            int index;
 
             try
             {
@@ -351,7 +356,7 @@ namespace CCSWE.Collections.ObjectModel
         {
             _itemsLocker.EnterWriteLock();
 
-            var index = -1;
+            int index;
             T item;
 
             try
@@ -380,6 +385,7 @@ namespace CCSWE.Collections.ObjectModel
             return index;
         }
 
+        /// <summary>Removes all elements from the <see cref="SynchronizedObservableCollection{T}" />.</summary>
         public void Clear()
         {
             _itemsLocker.EnterWriteLock();
@@ -401,13 +407,25 @@ namespace CCSWE.Collections.ObjectModel
             OnCollectionReset();
         }
 
-        public void CopyTo(T[] array, int index)
+        /// <summary>Copies the <see cref="SynchronizedObservableCollection{T}" /> elements to an existing one-dimensional <see cref="System.Array" />, starting at the specified array index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="SynchronizedObservableCollection{T}" />. The <see cref="System.Array" /> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="array" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="arrayIndex" /> is less than zero.</exception>
+        /// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="SynchronizedObservableCollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
+        public void CopyTo(T[] array, int arrayIndex)
         {
+            Ensure.IsNotNull(nameof(array), array);
+            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
+            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+
             _itemsLocker.EnterReadLock();
 
             try
             {
-                _items.CopyTo(array, index);
+                _items.CopyTo(array, arrayIndex);
             }
             finally
             {
@@ -415,41 +433,22 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
-        void ICollection.CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int arrayIndex)
         {
+            Ensure.IsNotNull(nameof(array), array);
+            Ensure.IsValid(nameof(array), array.Rank == 1, "Multidimensional array are not supported");
+            Ensure.IsValid(nameof(array), array.GetLowerBound(0) == 0, "Non-zero lower bound is not supported");
+            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
+            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+
             _itemsLocker.EnterReadLock();
 
             try
             {
-                if (array == null)
-                {
-                    throw new ArgumentNullException("array", "'array' cannot be null");
-                }
-
-                if (array.Rank != 1)
-                {
-                    throw new ArgumentException("Multidimension arrays are not supported", "array");
-                }
-
-                if (array.GetLowerBound(0) != 0)
-                {
-                    throw new ArgumentException("Non-zero lower bound arrays are not supported", "array");
-                }
-
-                if (index < 0)
-                {
-                    throw new ArgumentOutOfRangeException("index", "'index' is out of range");
-                }
-
-                if (array.Length - index < _items.Count)
-                {
-                    throw new ArgumentException("Array is too small");
-                }
-
                 var tArray = array as T[];
                 if (tArray != null)
                 {
-                    _items.CopyTo(tArray, index);
+                    _items.CopyTo(tArray, arrayIndex);
                 }
                 else
                 {
@@ -481,7 +480,7 @@ namespace CCSWE.Collections.ObjectModel
                     {
                         for (var i = 0; i < count; i++)
                         {
-                            objects[index++] = _items[i];
+                            objects[arrayIndex++] = _items[i];
                         }
                     }
                     catch (ArrayTypeMismatchException)
@@ -496,6 +495,9 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
+        /// <summary>Determines whether an element is in the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="SynchronizedObservableCollection{T}" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="SynchronizedObservableCollection{T}" />. The value can be null for reference types.</param>
         public bool Contains(T item)
         {
             _itemsLocker.EnterReadLock();
@@ -512,29 +514,34 @@ namespace CCSWE.Collections.ObjectModel
 
         bool IList.Contains(object value)
         {
-            if (IsCompatibleObject(value))
+            if (!IsCompatibleObject(value))
             {
-                _itemsLocker.EnterReadLock();
-
-                try
-                {
-                    return _items.Contains((T) value);
-                }
-                finally
-                {
-                    _itemsLocker.ExitReadLock();
-                }
+                return false;
             }
 
-            return false;
+            _itemsLocker.EnterReadLock();
+
+            try
+            {
+                return _items.Contains((T) value);
+            }
+            finally
+            {
+                _itemsLocker.ExitReadLock();
+            }
         }
 
+        /// <summary>
+        /// Releases all resources used by the <see cref="SynchronizedObservableCollection{T}"/>.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>Returns an enumerator that iterates through the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>An <see cref="T:System.Collections.Generic.IEnumerator`1" /> for the <see cref="SynchronizedObservableCollection{T}" />.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             _itemsLocker.EnterReadLock();
@@ -563,6 +570,9 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
+        /// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="T:System.Collections.ObjectModel.Collection`1" />.</summary>
+        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <see cref="T:System.Collections.ObjectModel.Collection`1" />, if found; otherwise, -1.</returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.List`1" />. The value can be null for reference types.</param>
         public int IndexOf(T item)
         {
             _itemsLocker.EnterReadLock();
@@ -579,23 +589,28 @@ namespace CCSWE.Collections.ObjectModel
 
         int IList.IndexOf(object value)
         {
-            if (IsCompatibleObject(value))
+            if (!IsCompatibleObject(value))
             {
-                _itemsLocker.EnterReadLock();
-
-                try
-                {
-                    return _items.IndexOf((T) value);
-                }
-                finally
-                {
-                    _itemsLocker.ExitReadLock();
-                }
+                return -1;
             }
 
-            return -1;
+            _itemsLocker.EnterReadLock();
+
+            try
+            {
+                return _items.IndexOf((T) value);
+            }
+            finally
+            {
+                _itemsLocker.ExitReadLock();
+            }
         }
 
+        /// <summary>Inserts an element into the <see cref="SynchronizedObservableCollection{T}" /> at the specified index.</summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert. The value can be null for reference types.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is less than zero.-or-<paramref name="index" /> is greater than <see cref="SynchronizedObservableCollection{T}.Count" />.</exception>
         public void Insert(int index, T item)
         {
             _itemsLocker.EnterWriteLock();
@@ -603,8 +618,12 @@ namespace CCSWE.Collections.ObjectModel
             try
             {
                 CheckIsReadOnly();
-                CheckIndex(index);
                 CheckReentrancy();
+
+                if (index < 0 || index > _items.Count)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
 
                 _items.Insert(index, item);
             }
@@ -630,6 +649,39 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
+        /// <summary>Moves the item at the specified index to a new location in the collection.</summary>
+        /// <param name="oldIndex">The zero-based index specifying the location of the item to be moved.</param>
+        /// <param name="newIndex">The zero-based index specifying the new location of the item.</param>
+        public void Move(int oldIndex, int newIndex)
+        {
+            T value;
+
+            _itemsLocker.EnterWriteLock();
+
+            try
+            {
+                CheckIsReadOnly();
+                CheckReentrancy();
+                CheckIndex(oldIndex);
+                CheckIndex(newIndex);
+
+                value = _items[oldIndex];
+
+                _items.RemoveAt(oldIndex);
+                _items.Insert(newIndex, value);
+            }
+            finally
+            {
+                _itemsLocker.ExitWriteLock();
+            }
+
+            OnPropertyChanged("Item[]");
+            OnCollectionChanged(NotifyCollectionChangedAction.Move, value, newIndex, oldIndex);
+        }
+
+        /// <summary>Removes the first occurrence of a specific object from the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>true if <paramref name="item" /> is successfully removed; otherwise, false.  This method also returns false if <paramref name="item" /> was not found in the original <see cref="SynchronizedObservableCollection{T}" />.</returns>
+        /// <param name="item">The object to remove from the <see cref="SynchronizedObservableCollection{T}" />. The value can be null for reference types.</param>
         public bool Remove(T item)
         {
             int index;
@@ -673,6 +725,10 @@ namespace CCSWE.Collections.ObjectModel
             }
         }
 
+        /// <summary>Removes the element at the specified index of the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <param name="index">The zero-based index of the element to remove.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is less than zero.-or-<paramref name="index" /> is equal to or greater than <see cref="SynchronizedObservableCollection{T}.Count" />.</exception>
         public void RemoveAt(int index)
         {
             T value;

@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using CCSWE.Collections.Generic;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable ObjectCreationAsStatement
-
 namespace CCSWE.Core.UnitTests.Collections.Generic
 {
     [ExcludeFromCodeCoverage]
