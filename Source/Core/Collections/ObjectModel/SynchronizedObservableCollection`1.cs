@@ -596,7 +596,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 if (index < 0 || index > _items.Count)
