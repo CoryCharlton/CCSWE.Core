@@ -34,10 +34,11 @@ namespace CCSWE
         /// </summary>
         /// <param name="name">The name of the parameter we are validating.</param>
         /// <param name="expression">The expression that will be evaluated.</param>
+        /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the expression evaluates to <c>false</c></exception>.
-        public static void IsInRange(string name, bool expression)
+        public static void IsInRange(string name, bool expression, string message = null)
         {
-            IsValid<ArgumentOutOfRangeException>(name, expression, $"The value passed for '{name}' is out of range.");
+            IsValid<ArgumentOutOfRangeException>(name, expression, string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is out of range." : message);
         }
 
         /// <summary>
@@ -45,10 +46,11 @@ namespace CCSWE
         /// </summary>
         /// <param name="name">The name of the parameter we are validating.</param>
         /// <param name="value">The value that will be evaluated.</param>
+        /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentNullException">Thrown when the value is <c>null</c></exception>.
-        public static void IsNotNull<T>(string name, T value) where T : class
+        public static void IsNotNull<T>(string name, T value, string message = null) where T : class
         {
-            IsValid<ArgumentNullException>(name, value != null, $"The value passed for '{name}' is null.");
+            IsValid<ArgumentNullException>(name, value != null, string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is null." : message);
         }
 
         /// <summary>
@@ -56,10 +58,11 @@ namespace CCSWE
         /// </summary>
         /// <param name="name">The name of the parameter we are validating.</param>
         /// <param name="value">The value that will be evaluated.</param>
+        /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentException">Thrown when the value is <c>null</c> or <c>whitespace</c>.</exception>.
-        public static void IsNotNullOrWhitespace(string name, string value)
+        public static void IsNotNullOrWhitespace(string name, string value, string message = null)
         {
-            IsValid<ArgumentException>(name, !string.IsNullOrWhiteSpace(value), $"The value passed for '{name}' is empty, null, or whitespace.");
+            IsValid<ArgumentException>(name, !string.IsNullOrWhiteSpace(value), string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is empty, null, or whitespace." : message);
         }
 
         /// <summary>
@@ -67,10 +70,11 @@ namespace CCSWE
         /// </summary>
         /// <param name="name">The name of the parameter we are validating.</param>
         /// <param name="expression">The expression that will be evaluated.</param>
+        /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentException">Thrown when the expression evaluates to <c>false</c></exception>.
-        public static void IsValid(string name, bool expression)
+        public static void IsValid(string name, bool expression, string message = null)
         {
-            IsValid<ArgumentException>(name, expression, $"The value passed for '{name}' is not valid.");
+            IsValid<ArgumentException>(name, expression, string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is not valid." : message);
         }
 
         /// <summary>
@@ -87,12 +91,7 @@ namespace CCSWE
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                message = $"The value passed for '{name}' is not valid.";
-            }
-
-            throw GetException<TException>(name, message);
+            throw GetException<TException>(name, string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is not valid." : message);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace CCSWE.Collections.Generic
 {
     /// <summary>Represents a first-in, first-out collection of objects that is thread safe.</summary>
     /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
-    public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection
+    public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection, IDisposable
     {
         #region Constructor
         /// <summary>
@@ -46,6 +46,7 @@ namespace CCSWE.Collections.Generic
         #endregion
 
         #region Private Fields
+        private bool _isDisposed;
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
         private readonly Queue<T> _queue;
         [NonSerialized] private object _syncRoot;
@@ -72,7 +73,7 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        bool ICollection.IsSynchronized => false;
+        bool ICollection.IsSynchronized => true;
 
         object ICollection.SyncRoot
         {
@@ -85,6 +86,23 @@ namespace CCSWE.Collections.Generic
 
                 return _syncRoot;
             }
+        }
+        #endregion
+
+        #region Protected Methods
+        /// <summary>
+        /// Releases all resources used by the <see cref="ThreadSafeQueue{T}"/>.
+        /// </summary>
+        /// <param name="disposing">Not used.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _itemsLocker.Dispose();
+            _isDisposed = true;
         }
         #endregion
 
@@ -135,7 +153,7 @@ namespace CCSWE.Collections.Generic
         {
             Ensure.IsNotNull(nameof(array), array);
             Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
-            Ensure.IsValid<ArgumentException>(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
 
             _itemsLocker.EnterReadLock();
 
@@ -150,37 +168,15 @@ namespace CCSWE.Collections.Generic
 
         }
 
-        //TODO: ThreadSafeQueue<T> ICollection.CopyTo(Array array, int index) - Implement
-        void ICollection.CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int arrayIndex)
         {
-            throw new NotImplementedException("Hope you didn't need this :)");
-            //if (array == null)
-            //    ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
-            //if (array.Rank != 1)
-            //    ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_RankMultiDimNotSupported);
-            //if (array.GetLowerBound(0) != 0)
-            //    ThrowHelper.ThrowArgumentException(ExceptionResource.Arg_NonZeroLowerBound);
-            //int length1 = array.Length;
-            //if (index < 0 || index > length1)
-            //    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.index, ExceptionResource.ArgumentOutOfRange_Index);
-            //if (length1 - index < this._size)
-            //    ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidOffLen);
-            //int num = length1 - index < this._size ? length1 - index : this._size;
-            //if (num == 0)
-            //    return;
-            //try
-            //{
-            //    int length2 = this._array.Length - this._head < num ? this._array.Length - this._head : num;
-            //    Array.Copy((Array)this._array, this._head, array, index, length2);
-            //    int length3 = num - length2;
-            //    if (length3 <= 0)
-            //        return;
-            //    Array.Copy((Array)this._array, 0, array, index + this._array.Length - this._head, length3);
-            //}
-            //catch (ArrayTypeMismatchException ex)
-            //{
-            //    ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_InvalidArrayType);
-            //}
+            Ensure.IsNotNull(nameof(array), array);
+            Ensure.IsValid(nameof(array), array.Rank == 1, "Multidimensional array are not supported");
+            Ensure.IsValid(nameof(array), array.GetLowerBound(0) == 0, "Non-zero lower bound is not supported");
+            Ensure.IsInRange(nameof(arrayIndex), arrayIndex >= 0 && arrayIndex < array.Length);
+            Ensure.IsValid(nameof(arrayIndex), array.Length - arrayIndex >= Count, "Invalid offset length.");
+
+            ((ICollection)_queue).CopyTo(array, arrayIndex);
         }
 
         /// <summary>Removes and returns the object at the beginning of the <see cref="ThreadSafeQueue{T}" />.</summary>
@@ -202,6 +198,15 @@ namespace CCSWE.Collections.Generic
             }
         }
 
+        /// <summary>
+        /// Releases all resources used by the <see cref="ThreadSafeQueue{T}"/>.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>Adds an object to the end of the <see cref="ThreadSafeQueue{T}" />.</summary>
         /// <param name="item">The object to add to the <see cref="ThreadSafeQueue{T}" />. The value can be null for reference types.</param>
         public void Enqueue(T item)
@@ -218,17 +223,22 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        // TODO: Add XmlDoc
+        /// <summary>Adds the elements of the specified collection to the end of the <see cref="ThreadSafeQueue{T}" />.</summary>
+        #pragma warning disable 1584,1711,1572,1581,1580
+        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="ThreadSafeQueue{T}" />. The collection itself cannot be null, but it can contain elements that are null, if type <paramref name="T" /> is a reference type.</param>
+        #pragma warning restore 1584,1711,1572,1581,1580
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="collection" /> is null.</exception>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public void EnqueueRange(IEnumerable<T> items)
+        public void EnqueueRange(IEnumerable<T> collection)
         {
-            Ensure.IsNotNull(nameof(items), items);
+            Ensure.IsNotNull(nameof(collection), collection);
 
             _itemsLocker.EnterWriteLock();
-
-            try
+ 
+           try
             {
-                foreach (var item in items)
+                foreach (var item in collection)
                 {
                     _queue.Enqueue(item);
                 }
@@ -305,10 +315,12 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        // TODO: Add XmlDoc
-        public bool TryDequeue(out T item)
+        /// <summary>Tries to remove and return the object at the beginning of the queue.</summary>
+        /// <returns><c>true</c> if an element was removed and returned from the beginning of the <see cref="ThreadSafeQueue{T}" /> successfully; otherwise, <c>false</c>.</returns>
+        /// <param name="result">When this method returns, if the operation was successful, <paramref name="result" /> contains the object removed. If no object was available to be removed, the value is unspecified.</param>
+        public bool TryDequeue(out T result)
         {
-            item = default(T);
+            result = default(T);
 
             _itemsLocker.EnterUpgradeableReadLock();
 
@@ -323,7 +335,7 @@ namespace CCSWE.Collections.Generic
 
                 try
                 {
-                    item = _queue.Dequeue();
+                    result = _queue.Dequeue();
                     return true;
                 }
                 catch (Exception)
