@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using CCSWE.Collections.ObjectModel;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable ObjectCreationAsStatement
+// ReSharper disable UnusedVariable
 namespace CCSWE.Core.UnitTests.Collections.ObjectModel
 {
     [TestFixture]
@@ -17,7 +20,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_Add_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked()
+            public void It_invokes_CollectionChanged()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -29,13 +32,27 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("4"));
                 Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(3));
             }
+
+            [Test]
+            public void It_invokes_PropertyChanged()
+            {
+                var collection = new SynchronizedObservableCollection<string>();
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged) collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.Add("4");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
         }
 
         [TestFixture]
         public class When_Clear_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked()
+            public void It_invokes_CollectionChanged()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -44,6 +61,20 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 collection.Clear();
 
                 Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Reset));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.Clear();
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
             }
 
             [Test]
@@ -195,7 +226,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_GetEnumerator_is_called
         {
             [Test]
-            public void It_should_not_throw_exception_if_collection_is_modified()
+            public void It_does_not_throw_exception_if_collection_is_modified()
             {
                 var count = 0;
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
@@ -276,7 +307,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_ICollection_IsSynchronized_is_called
         {
             [Test]
-            public void Itreturns_true()
+            public void It_returns_true()
             {
                 Assert.That(((ICollection)new SynchronizedObservableCollection<string>()).IsSynchronized, Is.True);
             }
@@ -296,7 +327,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_IEnumerable_GetEnumerator_is_called
         {
             [Test]
-            public void It_should_not_throw_exception_if_collection_is_modified()
+            public void It_does_not_throw_exception_if_collection_is_modified()
             {
                 var count = 0;
                 var collection = new SynchronizedObservableCollection<string>(new List<string> {"1", "2", "3"});
@@ -317,7 +348,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_IList_Add_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked()
+            public void It_invokes_CollectionChanged()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -331,7 +362,21 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
             }
 
             [Test]
-            public void It_throwns_exception_when_value_is_not_compatible_object()
+            public void It_invokes_PropertyChanged()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                ((IList)collection).Add("4");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
+
+            [Test]
+            public void It_throws_exception_when_value_is_not_compatible_object()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
 
@@ -368,6 +413,97 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         }
 
         [TestFixture]
+        public class When_IList_Indexer_Get_is_called
+        {
+            [Test]
+            public void It_returns_item_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+
+                Assert.That(((IList) collection)[2], Is.EqualTo("3"));
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_greater_than_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = ((IList) new SynchronizedObservableCollection<string>(new List<string> {"1", "2", "3"}))[4]; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_equal_to_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }))[3]; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_less_than_zero()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }))[-1]; });
+            }
+        }
+
+        [TestFixture]
+        public class When_IList_Indexer_Set_is_called
+        {
+            [Test]
+            public void It_invokes_CollectionChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
+
+                collection.CollectionChanged += (sender, args) => { collectionChangedEventArgs = args; };
+                ((IList) collection)[2] = "It_updates_item_when_index_is_in_range";
+
+                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Replace));
+                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("It_updates_item_when_index_is_in_range"));
+                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(2));
+                Assert.That(collectionChangedEventArgs.OldItems[0], Is.EqualTo("3"));
+                Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(2));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                ((IList)collection)[2] = "It_updates_item_when_index_is_in_range";
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(1));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_greater_than_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }))[4] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_equal_to_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }))[3] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_less_than_zero()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }))[-1] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_updates_item_when_index_is_in_range()
+            {
+                // ReSharper disable once UseObjectOrCollectionInitializer
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                ((IList) collection)[2] = "It_updates_item_when_index_is_in_range";
+
+                Assert.That(collection[2], Is.EqualTo("It_updates_item_when_index_is_in_range"));
+            }
+        }
+
+        [TestFixture]
         public class When_IList_IndexOf_is_called
         {
             [Test]
@@ -395,20 +531,6 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_IList_Insert_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_index_is_in_range()
-            {
-                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
-                NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
-
-                collection.CollectionChanged += (sender, args) => { collectionChangedEventArgs = args; };
-                ((IList)collection).Insert(3, "4");
-
-                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add));
-                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("4"));
-                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(3));
-            }
-
-            [Test]
             public void It_inserts_the_item_when_index_is_equal_to_count()
             {
                 var collection = new SynchronizedObservableCollection<string>();
@@ -431,6 +553,34 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
             }
 
             [Test]
+            public void It_invokes_CollectionChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
+
+                collection.CollectionChanged += (sender, args) => { collectionChangedEventArgs = args; };
+                ((IList)collection).Insert(3, "4");
+
+                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add));
+                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("4"));
+                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(3));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                ((IList)collection).Insert(3, "4");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
+
+            [Test]
             public void It_throws_exception_when_index_is_greater_than_count()
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => { ((IList)new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })).Insert(4, "4"); });
@@ -443,7 +593,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
             }
 
             [Test]
-            public void It_throwns_exception_when_value_is_not_compatible_object()
+            public void It_throws_exception_when_value_is_not_compatible_object()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
 
@@ -474,7 +624,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_IList_Remove_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_collection_contains_item()
+            public void It_invokes_CollectionChanged_when_collection_contains_item()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -485,6 +635,20 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Remove));
                 Assert.That(collectionChangedEventArgs.OldItems[0], Is.EqualTo("3"));
                 Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(2));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_collection_contains_item()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                ((IList)collection).Remove("3");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
             }
         }
 
@@ -507,22 +671,107 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         }
 
         [TestFixture]
-        public class When_Insert_is_called
+        public class When_Indexer_Get_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_index_is_in_range()
+            public void It_returns_item_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> {"1", "2", "3"});
+
+                Assert.That(collection[2], Is.EqualTo("3"));
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_greater_than_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[4]; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_equal_to_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[3]; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_less_than_zero()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var item = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[-1]; });
+            }
+        }
+
+        [TestFixture]
+        public class When_Indexer_Set_is_called
+        {
+            [Test]
+            public void It_invokes_CollectionChanged_when_index_is_in_range()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
 
                 collection.CollectionChanged += (sender, args) => { collectionChangedEventArgs = args; };
-                collection.Insert(3, "4");
+                collection[2] = "It_updates_item_when_index_is_in_range";
 
-                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add));
-                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("4"));
-                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(3));
+                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Replace));
+                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("It_updates_item_when_index_is_in_range"));
+                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(2));
+                Assert.That(collectionChangedEventArgs.OldItems[0], Is.EqualTo("3"));
+                Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(2));
             }
 
+            [Test]
+            public void It_invokes_PropertyChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection[2] = "It_updates_item_when_index_is_in_range";
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(1));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_greater_than_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[4] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_equal_to_count()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[3] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_index_is_less_than_zero()
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => { new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" })[-1] = "When_Indexer_Set_is_called"; });
+            }
+
+            [Test]
+            public void It_throws_exception_when_value_is_not_compatible_object()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+
+                Assert.Throws<ArgumentException>(() => ((IList) collection)[2] = 2);
+            }
+
+            [Test]
+            public void It_updates_item_when_index_is_in_range()
+            {
+                // ReSharper disable once UseObjectOrCollectionInitializer
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                collection[2] = "It_updates_item_when_index_is_in_range";
+
+                Assert.That(collection[2], Is.EqualTo("It_updates_item_when_index_is_in_range"));
+            }
+        }
+
+        [TestFixture]
+        public class When_Insert_is_called
+        {
             [Test]
             public void It_inserts_the_item_when_index_is_equal_to_count()
             {
@@ -546,6 +795,34 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
             }
 
             [Test]
+            public void It_invokes_CollectionChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
+
+                collection.CollectionChanged += (sender, args) => { collectionChangedEventArgs = args; };
+                collection.Insert(3, "4");
+
+                Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add));
+                Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("4"));
+                Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(3));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.Insert(3, "4");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
+            }
+
+            [Test]
             public void It_throws_exception_when_index_is_greater_than_count()
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => { new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" }).Insert(4, "4"); });
@@ -562,7 +839,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_Move_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_new_index_and_old_index_are_in_range()
+            public void It_invokes_CollectionChanged_when_new_index_and_old_index_are_in_range()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -575,6 +852,19 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(0));
                 Assert.That(collectionChangedEventArgs.NewItems[0], Is.EqualTo("1"));
                 Assert.That(collectionChangedEventArgs.NewStartingIndex, Is.EqualTo(2));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_new_index_and_old_index_are_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.Move(0, 2);
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(1));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
             }
 
             [Test]
@@ -638,10 +928,11 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
             }
         }
 
+        [TestFixture]
         public class When_Remove_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_collection_contains_item()
+            public void It_invokes_CollectionChanged_when_collection_contains_item()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -652,6 +943,20 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Remove));
                 Assert.That(collectionChangedEventArgs.OldItems[0], Is.EqualTo("3"));
                 Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(2));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_collection_contains_item()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.Remove("3");
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
             }
 
             [Test]
@@ -680,7 +985,7 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
         public class When_RemoveAt_is_called
         {
             [Test]
-            public void CollectionChanged_is_invoked_when_index_is_in_range()
+            public void It_invokes_CollectionChanges_when_index_is_in_range()
             {
                 var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
                 NotifyCollectionChangedEventArgs collectionChangedEventArgs = null;
@@ -691,6 +996,20 @@ namespace CCSWE.Core.UnitTests.Collections.ObjectModel
                 Assert.That(collectionChangedEventArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Remove));
                 Assert.That(collectionChangedEventArgs.OldItems[0], Is.EqualTo("3"));
                 Assert.That(collectionChangedEventArgs.OldStartingIndex, Is.EqualTo(2));
+            }
+
+            [Test]
+            public void It_invokes_PropertyChanged_when_index_is_in_range()
+            {
+                var collection = new SynchronizedObservableCollection<string>(new List<string> { "1", "2", "3", "3" });
+                var propertyChangedEventArgs = new List<PropertyChangedEventArgs>();
+
+                ((INotifyPropertyChanged)collection).PropertyChanged += (sender, args) => { propertyChangedEventArgs.Add(args); };
+                collection.RemoveAt(2);
+
+                Assert.That(propertyChangedEventArgs.Count, Is.EqualTo(2));
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Count")), Is.True);
+                Assert.That(propertyChangedEventArgs.Any(p => p.PropertyName.Equals("Item[]")), Is.True);
             }
 
             [Test]

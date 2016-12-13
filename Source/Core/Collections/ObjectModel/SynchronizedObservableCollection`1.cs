@@ -141,6 +141,12 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Public Properties
+        /// <summary>
+        /// Gets the <see cref="SynchronizationContext"/> that events will be invoked on.
+        /// </summary>
+        // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
+        public SynchronizationContext Context => _context;
+
         /// <summary>Gets the number of elements actually contained in the <see cref="SynchronizedObservableCollection{T}" />.</summary>
         /// <returns>The number of elements actually contained in the <see cref="SynchronizedObservableCollection{T}" />.</returns>
         public int Count
@@ -193,7 +199,7 @@ namespace CCSWE.Collections.ObjectModel
                     CheckIndex(index);
                     CheckReentrancy();
 
-                    oldValue = this[index];
+                    oldValue = _items[index];
 
                     _items[index] = value;
 
@@ -246,11 +252,6 @@ namespace CCSWE.Collections.ObjectModel
             return ((value is T) || (value == null && default(T) == null));
         }
 
-        private void OnPropertyChanged(string propertyName)
-        {
-            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-        }
-
         private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
         {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
@@ -283,6 +284,11 @@ namespace CCSWE.Collections.ObjectModel
         private void OnCollectionReset()
         {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         private void OnPropertyChanged(PropertyChangedEventArgs e)
