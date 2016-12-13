@@ -61,6 +61,7 @@
     <Compile Include="Collections\Specialized\NameValueCollectionExtensionsTest.cs" />
     <Compile Include="OperationTrackerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ConsumerThreadPoolTest.cs" />
     <Compile Include="TimeSpanExtensionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
