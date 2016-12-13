@@ -155,6 +155,25 @@ namespace CCSWE.Core.UnitTests.Collections.Generic
         }
 
         [TestFixture]
+        public class When_Dispose_is_called
+        {
+            [Test]
+            public void It_does_not_throw_exception()
+            {
+                Assert.DoesNotThrow(() => new ThreadSafeQueue<string>().Dispose());
+            }
+
+            [Test]
+            public void It_does_not_throw_exception_if_already_disposed()
+            {
+                var collection = new ThreadSafeQueue<string>();
+
+                Assert.DoesNotThrow(() => collection.Dispose());
+                Assert.DoesNotThrow(() => collection.Dispose());
+            }
+        }
+
+        [TestFixture]
         public class When_Enqueue_is_called
         {
             [Test]

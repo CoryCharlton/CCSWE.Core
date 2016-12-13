@@ -84,11 +84,11 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Private Properties
-        bool IList.IsFixedSize => (_items as IList)?.IsFixedSize ?? _items.IsReadOnly;
+        bool IList.IsFixedSize => false;
 
-        bool ICollection<T>.IsReadOnly => _items.IsReadOnly;
+        bool ICollection<T>.IsReadOnly => false;
 
-        bool IList.IsReadOnly => _items.IsReadOnly;
+        bool IList.IsReadOnly => false;
 
         bool ICollection.IsSynchronized => true;
 
@@ -190,7 +190,6 @@ namespace CCSWE.Collections.ObjectModel
 
                 try
                 {
-                    CheckIsReadOnly();
                     CheckIndex(index);
                     CheckReentrancy();
 
@@ -226,15 +225,6 @@ namespace CCSWE.Collections.ObjectModel
                 throw new ArgumentOutOfRangeException();
             }
         }
-
-        private void CheckIsReadOnly()
-        {
-            if (_items.IsReadOnly)
-            {
-                throw new NotSupportedException("SynchronizedObservableCollection is readonly");
-            }
-        }
-
 
         private void CheckReentrancy()
         {
@@ -335,7 +325,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 index = _items.Count;
@@ -361,7 +350,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 index = _items.Count; 
@@ -392,7 +380,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 _items.Clear();
@@ -558,21 +545,13 @@ namespace CCSWE.Collections.ObjectModel
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            _itemsLocker.EnterReadLock();
-
-            try
-            {
-                return ((IEnumerable) _items.ToList()).GetEnumerator();
-            }
-            finally
-            {
-                _itemsLocker.ExitReadLock();
-            }
+            // ReSharper disable once RedundantCast
+            return (IEnumerator) GetEnumerator();
         }
 
-        /// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="T:System.Collections.ObjectModel.Collection`1" />.</summary>
-        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <see cref="T:System.Collections.ObjectModel.Collection`1" />, if found; otherwise, -1.</returns>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.List`1" />. The value can be null for reference types.</param>
+        /// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <see cref="SynchronizedObservableCollection{T}" />, if found; otherwise, -1.</returns>
+        /// <param name="item">The object to locate in the <see cref="SynchronizedObservableCollection{T}" />. The value can be null for reference types.</param>
         public int IndexOf(T item)
         {
             _itemsLocker.EnterReadLock();
@@ -617,7 +596,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 if (index < 0 || index > _items.Count)
@@ -660,7 +638,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
                 CheckIndex(oldIndex);
                 CheckIndex(newIndex);
@@ -691,7 +668,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckReentrancy();
 
                 index = _items.IndexOf(item);
@@ -737,7 +713,6 @@ namespace CCSWE.Collections.ObjectModel
 
             try
             {
-                CheckIsReadOnly();
                 CheckIndex(index);
                 CheckReentrancy();
 
