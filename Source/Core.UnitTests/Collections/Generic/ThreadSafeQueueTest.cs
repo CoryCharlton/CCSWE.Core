@@ -282,7 +282,7 @@ namespace CCSWE.Core.UnitTests.Collections.Generic
         public class When_ICollection_IsSynchronized_is_called
         {
             [Test]
-            public void Itreturns_true()
+            public void It_returns_true()
             {
                 Assert.That(((ICollection)new ThreadSafeQueue<string>()).IsSynchronized, Is.True);
             }

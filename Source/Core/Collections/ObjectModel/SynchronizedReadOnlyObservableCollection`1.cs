@@ -51,6 +51,7 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Private Fields
+        [NonSerialized]
         private readonly SynchronizationContext _context;
         #endregion
 
