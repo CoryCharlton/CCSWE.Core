@@ -48,7 +48,7 @@ namespace CCSWE
         /// <param name="value">The value that will be evaluated.</param>
         /// <param name="message">The message associated with the <see cref="Exception"/></param>
         /// <exception cref="ArgumentNullException">Thrown when the value is <c>null</c></exception>.
-        public static void IsNotNull<T>(string name, T value, string message = null) where T : class
+        public static void IsNotNull<T>(string name, T value, string message = null)
         {
             IsValid<ArgumentNullException>(name, value != null, string.IsNullOrWhiteSpace(message) ? $"The value passed for '{name}' is null." : message);
         }

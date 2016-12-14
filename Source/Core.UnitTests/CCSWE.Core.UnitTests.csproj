@@ -54,12 +54,14 @@
   <ItemGroup>
     <Compile Include="Collections\Generic\ThreadSafeQueueTest.cs" />
     <Compile Include="Collections\ObjectModel\SynchronizedObservableCollectionTest.cs" />
+    <Compile Include="Collections\ObjectModel\SynchronizedReadOnlyObservableCollectionTest.cs" />
     <Compile Include="Configuration\AppSettingsTest.cs" />
     <Compile Include="DateTimeExtensionsTest.cs" />
     <Compile Include="EnsureTest.cs" />
     <Compile Include="Collections\Specialized\NameValueCollectionExtensionsTest.cs" />
     <Compile Include="OperationTrackerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\ConsumerThreadPoolTest.cs" />
     <Compile Include="TimeSpanExtensionsTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,6 @@ namespace CCSWE.Threading
         /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
         public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, ThreadPriority threadPriority = ThreadPriority.BelowNormal) : this(consumersThreads, processItem, CancellationToken.None, threadPriority)
         {
-            // Empty constructor
         }
 
         /// <summary>
@@ -33,15 +32,8 @@ namespace CCSWE.Threading
         /// <param name="threadPriority">The <see cref="ThreadPriority"/> of the consumer threads</param>
         public ConsumerThreadPool(int consumersThreads, Func<T, bool> processItem, CancellationToken cancellationToken, ThreadPriority threadPriority = ThreadPriority.BelowNormal)
         {
-            if (consumersThreads <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(consumersThreads), consumersThreads, "'consumerThreads' must be greater than zero");
-            }
-
-            if (processItem == null)
-            {
-                throw new ArgumentNullException(nameof(processItem));
-            }
+            Ensure.IsInRange(nameof(consumersThreads), consumersThreads > 0, $"'{nameof(consumersThreads)}' must be greater than zero.");
+            Ensure.IsNotNull(nameof(processItem), processItem);
 
             _cancellationToken = cancellationToken;
             _items = new BlockingCollection<T>(new ConcurrentQueue<T>());
@@ -174,6 +166,10 @@ namespace CCSWE.Threading
         #endregion
 
         #region Protected Methods
+        /// <summary>
+        /// Releases all resources used by the <see cref="ConsumerThreadPool{T}"/>.
+        /// </summary>
+        /// <param name="disposing">Not used.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)
@@ -196,10 +192,7 @@ namespace CCSWE.Threading
         /// <param name="item">Adds the item to the <see cref="ConsumerThreadPool{T}"/>. The item cannot be a null reference.</param>
         public void Add(T item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item), "'item' cannot be null");
-            }
+            Ensure.IsNotNull(nameof(item), item);
 
             try
             {
@@ -246,7 +239,14 @@ namespace CCSWE.Threading
 
             while (!IsCancelled && !IsCompleted)
             {
-                await Task.Delay(100, _cancellationToken);
+                try
+                {
+                    await Task.Delay(100, _cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Move along. Nothing to see here.
+                }
             }
         }
         #endregion
