@@ -51,11 +51,22 @@ namespace CCSWE.Core.UnitTests
             }
 
             [Test]
-            public void It_throws_exception_when_input_is_null_or_whitespace()
+            public void It_throws_exception_when_input_is_empty()
             {
-                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_null_or_whitespace", null));
-                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_null_or_whitespace", " "));
-                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_null_or_whitespace", "\t"));
+                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_empty", ""));
+            }
+
+            [Test]
+            public void It_throws_exception_when_input_is_null()
+            {
+                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_null", null));
+            }
+
+            [Test]
+            public void It_throws_exception_when_input_is_whitespace()
+            {
+                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_whitespace", " "));
+                Assert.Throws<ArgumentException>(() => Ensure.IsNotNullOrWhitespace("It_throws_exception_when_input_is_whitespace", "\t"));
             }
         }
 

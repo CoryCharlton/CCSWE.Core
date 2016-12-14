@@ -60,13 +60,16 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Private Fields
+        [NonSerialized]
         private readonly SynchronizationContext _context;
         private bool _isDisposed;
         private readonly IList<T> _items = new List<T>();
+        [NonSerialized]
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
-        [NonSerialized] private object _syncRoot;
-
+        [NonSerialized]
         private readonly SimpleMonitor _monitor = new SimpleMonitor();
+        [NonSerialized]
+        private object _syncRoot;
         #endregion
 
         #region Events
@@ -84,15 +87,29 @@ namespace CCSWE.Collections.ObjectModel
         #endregion
 
         #region Private Properties
-        bool IList.IsFixedSize => false;
+        /// <summary>Gets a value indicating whether the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>true if the <see cref="SynchronizedObservableCollection{T}" /> has a fixed size; otherwise, false.</returns>
+        protected bool IsFixedSize => false;
 
-        bool ICollection<T>.IsReadOnly => false;
+        bool IList.IsFixedSize => IsFixedSize;
 
-        bool IList.IsReadOnly => false;
+        /// <summary>Gets a value indicating whether the <see cref="SynchronizedObservableCollection{T}" /> is read-only.</summary>
+        /// <returns>true if the <see cref="SynchronizedObservableCollection{T}" /> is read-only; otherwise, false.</returns>
+        protected bool IsReadOnly => false;
 
-        bool ICollection.IsSynchronized => true;
+        bool ICollection<T>.IsReadOnly => IsReadOnly;
 
-        object ICollection.SyncRoot
+        bool IList.IsReadOnly => IsReadOnly;
+
+        /// <summary>Gets a value indicating whether access to the <see cref="SynchronizedObservableCollection{T}" /> is synchronized (thread safe).</summary>
+        /// <returns>true if access to the <see cref="SynchronizedObservableCollection{T}" /> is synchronized (thread safe); otherwise, false.</returns>
+        protected bool IsSynchronized => true;
+
+        bool ICollection.IsSynchronized => IsSynchronized;
+
+        /// <summary>Gets an object that can be used to synchronize access to the <see cref="SynchronizedObservableCollection{T}" />.</summary>
+        /// <returns>An object that can be used to synchronize access to the <see cref="SynchronizedObservableCollection{T}" />.</returns>
+        protected object SyncRoot
         {
             get
             {
@@ -122,6 +139,8 @@ namespace CCSWE.Collections.ObjectModel
                 return _syncRoot;
             }
         }
+
+        object ICollection.SyncRoot => SyncRoot;
 
         object IList.this[int index]
         {

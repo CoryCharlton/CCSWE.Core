@@ -73,9 +73,15 @@ namespace CCSWE.Collections.Generic
             }
         }
 
-        bool ICollection.IsSynchronized => true;
+        /// <summary>Gets a value indicating whether access to the <see cref="ThreadSafeQueue{T}" /> is synchronized (thread safe).</summary>
+        /// <returns>true if access to the <see cref="ThreadSafeQueue{T}" /> is synchronized (thread safe); otherwise, false.</returns>
+        protected bool IsSynchronized => true;
 
-        object ICollection.SyncRoot
+        bool ICollection.IsSynchronized => IsSynchronized;
+
+        /// <summary>Gets an object that can be used to synchronize access to the <see cref="ThreadSafeQueue{T}" />.</summary>
+        /// <returns>An object that can be used to synchronize access to the <see cref="ThreadSafeQueue{T}" />.</returns>
+        protected object SyncRoot
         {
             get
             {
@@ -87,6 +93,8 @@ namespace CCSWE.Collections.Generic
                 return _syncRoot;
             }
         }
+
+        object ICollection.SyncRoot => SyncRoot;
         #endregion
 
         #region Protected Methods
@@ -224,9 +232,7 @@ namespace CCSWE.Collections.Generic
         }
 
         /// <summary>Adds the elements of the specified collection to the end of the <see cref="ThreadSafeQueue{T}" />.</summary>
-        #pragma warning disable 1584,1711,1572,1581,1580
-        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="ThreadSafeQueue{T}" />. The collection itself cannot be null, but it can contain elements that are null, if type <paramref name="T" /> is a reference type.</param>
-        #pragma warning restore 1584,1711,1572,1581,1580
+        /// <param name="collection">The collection whose elements should be added to the end of the <see cref="ThreadSafeQueue{T}" />. The collection itself cannot be null, but it can contain elements that are null, if type is a reference type.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="collection" /> is null.</exception>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
