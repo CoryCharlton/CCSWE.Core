@@ -53,6 +53,18 @@ namespace CCSWE.IO
 
             try
             {
+                var destinationDirectory = Path.GetDirectoryName(destinationPath);
+
+                if (string.IsNullOrWhiteSpace(destinationDirectory))
+                {
+                    return false;
+                }
+
+                if (!Directory.Exists(destinationDirectory))
+                {
+                    Directory.CreateDirectory(destinationDirectory);
+                }
+
                 File.Move(sourcePath, destinationPath);
 
                 return true;
