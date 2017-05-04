@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace CCSWE.IO
 {
@@ -58,6 +59,16 @@ namespace CCSWE.IO
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Converts the size of a file to a user friendly string representation.
+        /// </summary>
+        /// <param name="file">The <see cref="FileInfo"/> that contains the length.</param>
+        /// <returns>A user friendly string representation of the number of bytes.</returns>
+        public static string ToFileSizeString(this FileInfo file)
+        {
+            return FileUtils.ToFileSizeString(file.Length);
         }
         #endregion
     }
