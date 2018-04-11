@@ -5,7 +5,7 @@ using System.Linq;
 namespace CCSWE.IO
 {
     /// <summary>
-    /// Extension methods for <see cref="DirectoryInfo"/>.
+    /// Helper methods for directory operations
     /// </summary>
     public static class DirectoryUtils
     {
@@ -38,6 +38,38 @@ namespace CCSWE.IO
             try
             {
                 return new DirectoryInfo(path).SafeDelete(recursive);
+            }
+            catch (Exception)
+            {
+                // Move along nothing to see here
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Safely moves a directory. Useful for situations where it would be nice if the directory was moved but it's ok if it isn't.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file or directory to move.</param>
+        /// <param name="destinationPath">The path to the new location for <c>sourcePath</c>. If <c>sourcePath</c> is a file, then <c>destinationPath</c> must also be a file name.</param>
+        /// <returns><c>true</c> if the directory was moved.</returns>
+        public static bool SafeMove(string sourcePath, string destinationPath)
+        {
+            if (string.IsNullOrWhiteSpace(sourcePath))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(destinationPath))
+            {
+                return false;
+            }
+
+            try
+            {
+                Directory.Move(sourcePath, destinationPath);
+
+                return true;
             }
             catch (Exception)
             {
