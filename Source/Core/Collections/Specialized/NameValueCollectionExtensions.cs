@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿#if NETSTANDARD2_0 || NETFULL
+using System.Collections.Specialized;
 
 namespace CCSWE.Collections.Specialized
 {
@@ -69,3 +70,4 @@ namespace CCSWE.Collections.Specialized
         }
     }
 }
+#endif

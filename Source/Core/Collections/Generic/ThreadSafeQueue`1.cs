@@ -10,7 +10,6 @@ namespace CCSWE.Collections.Generic
     /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
     public class ThreadSafeQueue<T> : IEnumerable<T>, ICollection, IDisposable
     {
-        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadSafeQueue{T}"/> class that is empty and has a default initial capacity.
         /// </summary>
@@ -43,16 +42,16 @@ namespace CCSWE.Collections.Generic
 
             _queue = new Queue<T>(capacity);
         }
-        #endregion
 
-        #region Private Fields
         private bool _isDisposed;
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
         private readonly Queue<T> _queue;
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized] private object _syncRoot;
-        #endregion
+#else
+        private object _syncRoot;
+#endif
 
-        #region Public Properties
         /// <summary>
         /// Gets the number of items contained in the <see cref="ThreadSafeQueue{T}"/>
         /// </summary>
@@ -95,9 +94,7 @@ namespace CCSWE.Collections.Generic
         }
 
         object ICollection.SyncRoot => SyncRoot;
-        #endregion
 
-        #region Protected Methods
         /// <summary>
         /// Releases all resources used by the <see cref="ThreadSafeQueue{T}"/>.
         /// </summary>
@@ -112,9 +109,7 @@ namespace CCSWE.Collections.Generic
             _itemsLocker.Dispose();
             _isDisposed = true;
         }
-        #endregion
 
-        #region Public Methods
         /// <summary>
         /// Removes all objects from the <see cref="ThreadSafeQueue{T}" />.
         /// </summary>
@@ -272,13 +267,11 @@ namespace CCSWE.Collections.Generic
         }
 
         // ReSharper disable RedundantCast
-        [ExcludeFromCodeCoverage]
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return (IEnumerator<T>) GetEnumerator();
         }
 
-        [ExcludeFromCodeCoverage]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator) GetEnumerator();
@@ -354,6 +347,5 @@ namespace CCSWE.Collections.Generic
                 _itemsLocker.ExitUpgradeableReadLock();
             }
         }
-        #endregion
     }
 }

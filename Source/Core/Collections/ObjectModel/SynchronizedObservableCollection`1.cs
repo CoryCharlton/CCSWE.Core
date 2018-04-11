@@ -13,12 +13,13 @@ namespace CCSWE.Collections.ObjectModel
 {
     /// <summary>Represents a thread-safe dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed.</summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
+#if NETSTANDARD2_0 || NETFULL
     [Serializable]
+#endif
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
     public class SynchronizedObservableCollection<T> : IDisposable, IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        #region Constructor
         /// <summary>Initializes a new instance of the <see cref="SynchronizedObservableCollection{T}" /> class.</summary>
         public SynchronizedObservableCollection(): this(new List<T>(), GetCurrentSynchronizationContext())
         {
@@ -57,22 +58,26 @@ namespace CCSWE.Collections.ObjectModel
                 _items.Add(item);
             }
         }
-        #endregion
 
-        #region Private Fields
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized]
+#endif
         private readonly SynchronizationContext _context;
         private bool _isDisposed;
         private readonly IList<T> _items = new List<T>();
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized]
+#endif
         private readonly ReaderWriterLockSlim _itemsLocker = new ReaderWriterLockSlim();
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized]
+#endif
         private readonly SimpleMonitor _monitor = new SimpleMonitor();
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized]
+#endif
         private object _syncRoot;
-        #endregion
 
-        #region Events
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
             add { PropertyChanged += value; }
@@ -84,9 +89,7 @@ namespace CCSWE.Collections.ObjectModel
 
         /// <summary>Occurs when a property value changes.</summary>
         protected event PropertyChangedEventHandler PropertyChanged;
-        #endregion
 
-        #region Private Properties
         /// <summary>Gets a value indicating whether the <see cref="SynchronizedObservableCollection{T}" />.</summary>
         /// <returns>true if the <see cref="SynchronizedObservableCollection{T}" /> has a fixed size; otherwise, false.</returns>
         protected bool IsFixedSize => false;
@@ -157,9 +160,7 @@ namespace CCSWE.Collections.ObjectModel
                 }
             }
         }
-        #endregion
 
-        #region Public Properties
         /// <summary>
         /// Gets the <see cref="SynchronizationContext"/> that events will be invoked on.
         /// </summary>
@@ -231,9 +232,7 @@ namespace CCSWE.Collections.ObjectModel
                 OnNotifyItemReplaced(value, oldValue, index);
             }
         }
-        #endregion
 
-        #region Private Methods
         private IDisposable BlockReentrancy()
         {
             _monitor.Enter();
@@ -332,9 +331,7 @@ namespace CCSWE.Collections.ObjectModel
                 }, null);
             }
         }
-        #endregion
 
-        #region Protected Methods
         /// <summary>
         /// Releases all resources used by the <see cref="SynchronizedObservableCollection{T}"/>.
         /// </summary>
@@ -349,9 +346,7 @@ namespace CCSWE.Collections.ObjectModel
             _itemsLocker.Dispose();
             _isDisposed = true;
         }
-        #endregion
 
-        #region Public Methods
         /// <summary>Adds an object to the end of the <see cref="SynchronizedObservableCollection{T}" />. </summary>
         /// <param name="item">The object to be added to the end of the <see cref="SynchronizedObservableCollection{T}" />. The value can be null for reference types.</param>
         public void Add(T item)
@@ -470,6 +465,8 @@ namespace CCSWE.Collections.ObjectModel
                 }
                 else
                 {
+
+#if NETSTANDARD2_0 || NETFULL
                     //
                     // Catch the obvious case assignment will fail.
                     // We can found all possible problems by doing the check though.
@@ -482,6 +479,7 @@ namespace CCSWE.Collections.ObjectModel
                     {
                         throw new ArrayTypeMismatchException("Invalid array type");
                     }
+#endif
 
                     //
                     // We can't cast array of value type to object[], so we don't support 
@@ -753,9 +751,7 @@ namespace CCSWE.Collections.ObjectModel
 
             OnNotifyItemRemoved(value, index);
         }
-        #endregion
 
-        #region SimpleMonitor Class
         private class SimpleMonitor : IDisposable
         {
             private int _busyCount;
@@ -772,6 +768,5 @@ namespace CCSWE.Collections.ObjectModel
                 --_busyCount;
             }
         }
-        #endregion
     }
 }

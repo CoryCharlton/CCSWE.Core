@@ -189,3 +189,5 @@ _Pvt_Extensions/
 ModelManifest.xml
 *.nupkg
 /Source/packages
+
+.vs/

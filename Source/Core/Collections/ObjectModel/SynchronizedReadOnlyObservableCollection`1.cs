@@ -10,12 +10,13 @@ namespace CCSWE.Collections.ObjectModel
 {
     /// <summary>Represents a thread-safe dynamic data collection that provides notifications when items get added, removed, or when the whole collection is refreshed.</summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
+#if NETSTANDARD2_0 || NETFULL
     [Serializable]
+#endif
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}")]
     public class SynchronizedReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        #region Constructor
         /// <summary>Initializes a new instance of the <see cref="SynchronizedReadOnlyObservableCollection{T}" /> class that is a read-only wrapper around the specified <see cref="SynchronizedObservableCollection{T}"/>.</summary>
         /// <param name="collection">The collection to wrap.</param>
         /// <exception cref="T:System.ArgumentNullException">
@@ -40,22 +41,17 @@ namespace CCSWE.Collections.ObjectModel
             ((INotifyPropertyChanged) Items).PropertyChanged += HandlePropertyChanged;
         }
 
-        #endregion
-
-        #region Public Events
         /// <summary>Occurs when an item is added, removed, changed, moved, or the entire collection is refreshed.</summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
 
-        #region Private Fields
+#if NETSTANDARD2_0 || NETFULL
         [NonSerialized]
+#endif
         private readonly SynchronizationContext _context;
-        #endregion
 
-        #region Private Methods
         private void HandleCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnCollectionChanged(e);
@@ -87,6 +83,5 @@ namespace CCSWE.Collections.ObjectModel
 
             _context.Send(state => propertyChanged(this, e), null);
         }
-        #endregion
     }
 }

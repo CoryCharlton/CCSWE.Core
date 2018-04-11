@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETSTANDARD2_0 || NETFULL
+using System;
 
 namespace CCSWE
 {
@@ -87,3 +88,4 @@ namespace CCSWE
         }
     }
 }
+#endif

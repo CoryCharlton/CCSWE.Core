@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETSTANDARD2_0 || NETFULL
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
@@ -252,3 +253,4 @@ namespace CCSWE.Threading
         #endregion
     }
 }
+#endif
