@@ -3,8 +3,6 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="3.3.3" />
-    <PackageReference Include="Moq" Version="4.5.30" />
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.6.0" />
   </ItemGroup>
@@ -12,6 +10,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\CCSWE.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>
