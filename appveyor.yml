@@ -1,6 +1,6 @@
 environment:
   version: 2.1.0
-version: $(version)-{build}-{branch}
+version: '{build}-{branch}'
 image: Visual Studio 2017
 configuration: Release
 dotnet_csproj:
