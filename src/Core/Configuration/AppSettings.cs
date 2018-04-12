@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿#if NETFULL
+using System.Configuration;
 using CCSWE.Collections.Specialized;
 
 namespace CCSWE.Configuration
@@ -8,7 +9,6 @@ namespace CCSWE.Configuration
     /// </summary>
     public static class AppSettings
     {
-        #region Public Methods
         /// <summary>
         /// Gets the value associated with the specified key from <see cref='ConfigurationManager.AppSettings'/>.
         /// </summary>
@@ -49,6 +49,6 @@ namespace CCSWE.Configuration
 
             return ConfigurationManager.AppSettings.TryGetValueAs(key, out value);
         }
-        #endregion
     }
 }
+#endif

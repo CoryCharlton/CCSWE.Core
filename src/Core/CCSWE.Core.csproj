@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6;netstandard2.0;net45</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.0</Version>
+    <Authors>Cory Charlton</Authors>
+    <Company>Cory Charlton</Company>
+    <Description>Just a bunch of C# .NET classes and extension methods I find useful.</Description>
+    <Copyright>Copyright 2016</Copyright>
+    <PackageLicenseUrl>https://github.com/CoryCharlton/CCSWE.Core/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/CoryCharlton/CCSWE.Core</PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <PackageReleaseNotes />
+    <PackageTags>Utilities Threading Collections AppSettings Extensions ThreadPool ObservableCollection</PackageTags>
+    <RootNamespace>CCSWE</RootNamespace>
+    <AssemblyVersion>2.0</AssemblyVersion>
+    <FileVersion>2.0</FileVersion>
+  </PropertyGroup>
+   
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>NETFULL</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup>
+	<Reference Include="System.Configuration" Condition=" '$(TargetFramework)' == 'net45' " />
+  </ItemGroup> 
+</Project>
