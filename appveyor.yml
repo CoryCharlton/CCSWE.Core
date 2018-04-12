@@ -1,0 +1,20 @@
+version: $(base_version)-{build}-{branch}
+image: Visual Studio 2017
+configuration: Release
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: $(base_version)
+  package_version: $(base_version)
+  assembly_version: $(base_version)
+  file_version: $(base_version)
+  informational_version: $(base_version)
+environment:
+  version: 2.1.0
+before_build:
+- cmd: nuget restore ".\src\CCSWE.Core.sln"
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  include_nuget_references: true
+  verbosity: minimal
